@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licenses - Hex License</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <%- include('partials/navbar') %>
+
+    <div class="dashboard-container">
+        <div class="glass-card">
+            <div class="page-header">
+                <h2>License Management</h2>
+                <button class="create-button">
+                    <i class="fas fa-plus"></i>
+                    <span>Create License</span>
+                </button>
+            </div>
+
+            <div class="controls-section">
+                <div class="search-controls">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="glass-input" placeholder="Search licenses...">
+                    </div>
+                    <select class="glass-select">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="expired">Expired</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="glass-table">
+                    <thead>
+                        <tr>
+                            <th>License Key</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Expiry</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% licenses.forEach(license => { %>
+                        <tr>
+                            <td><code class="license-key"><%= license.key %></code></td>
+                            <td>
+                                <div class="user-cell">
+                                    <img src="<%= license.userAvatar %>" alt="User">
+                                    <span><%= license.user %></span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge <%= license.status %>">
+                                    <%= license.status %>
+                                </span>
+                            </td>
+                            <td><%= license.expiry %></td>
+                            <td class="actions">
+                                <button class="icon-button edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="icon-button delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="particles" id="particles-js"></div>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="/js/particles-config.js"></script>
+</body>
+</html>
