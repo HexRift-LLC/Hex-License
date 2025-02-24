@@ -40,4 +40,18 @@ router.get('/auth/discord/callback', passport.authenticate('discord', {
     failureRedirect: '/'
 }));
 
+router.get('/auth/logout', (req, res) => {
+    // Clear the session
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            return res.redirect('/dashboard');
+        }
+        // Clear cookies if you're using them
+        res.clearCookie('connect.sid');
+        // Redirect to home page or login page
+        res.redirect('/');
+    });
+});
+
 module.exports = router;

@@ -3,7 +3,7 @@
         <div class="nav-brand">
             <span class="brand-text">Hex License</span>
         </div>
-        
+
         <div class="nav-links">
             <a href="/dashboard" class="glass-button <%= path === '/dashboard' ? 'active' : '' %>">
                 <i class="fas fa-chart-line"></i>
@@ -21,23 +21,19 @@
 
         <div class="nav-profile">
             <div class="profile-trigger glass-button">
-                <img src="<%= user.avatar %>" alt="Avatar" class="profile-avatar">
+                <img src="<%= user.avatarURL || '/images/default-avatar.png' %>" alt="Avatar" class="profile-avatar">
                 <span class="profile-name"><%= user.username %></span>
                 <i class="fas fa-chevron-down"></i>
             </div>
             <div class="profile-dropdown glass-card">
                 <div class="dropdown-header">
-                    <img src="<%= user.avatar %>" alt="Avatar" class="dropdown-avatar">
+                    <img src="<%= user.avatarURL || '/images/default-avatar.png' %>" alt="Avatar" class="dropdown-avatar">
                     <div class="dropdown-user-info">
                         <span class="dropdown-username"><%= user.username %></span>
                         <span class="dropdown-role"><%= user.role %></span>
                     </div>
                 </div>
                 <div class="dropdown-divider"></div>
-                <a href="/profile" class="dropdown-item">
-                    <i class="fas fa-user-cog"></i>
-                    <span>Settings</span>
-                </a>
                 <a href="/auth/logout" class="dropdown-item logout">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>

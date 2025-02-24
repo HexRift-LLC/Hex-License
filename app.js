@@ -7,8 +7,8 @@ const fs = require('fs');
 const path = require('path');
 const indexRoutes = require('./routes/index');
 const authRoutes = require('./routes/auth');
+const User = require('./models/User');
 
-// Load config
 const config = yaml.load(fs.readFileSync(path.join(__dirname, 'config', 'config.yml'), 'utf8'));
 
 const app = express();
@@ -23,7 +23,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Discord Strategy
 passport.use(new DiscordStrategy({
     clientID: config.discord.clientId,
     clientSecret: config.discord.clientSecret,
@@ -35,6 +34,30 @@ passport.use(new DiscordStrategy({
 
 app.use('/', indexRoutes);
 app.use(authRoutes); // Ensure this line is present
+passport.use(new DiscordStrategy({
+    clientID: config.discord.clientId,
+    clientSecret: config.discord.clientSecret,
+    callbackURL: config.discord.callbackUrl,
+    scope: ['identify']
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        let user = await User.findOne({ discordId: profile.id });
+        const userCount = await User.countDocuments();
+
+        if (!user) {
+            user = await User.create({
+                discordId: profile.id,
+                username: profile.username,
+                avatar: profile.avatar,
+                role: userCount === 0 ? 'Owner' : 'User'
+            });
+        }
+
+        return done(null, user);
+    } catch (err) {
+        return done(err, null);
+    }
+}));
 
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));

@@ -570,7 +570,6 @@ body {
     gap: 16px;
     align-items: center;
 }
-}/* Navbar Styles */
 .glass-nav {
     background: rgba(32, 34, 37, 0.95);
     backdrop-filter: blur(10px);
@@ -613,6 +612,7 @@ body {
     letter-spacing: 0.5px;
     background: linear-gradient(45deg, var(--primary), #fff);
     -webkit-background-clip: text;
+    background-clip: text;  /* Standard property */
     -webkit-text-fill-color: transparent;
 }
 
