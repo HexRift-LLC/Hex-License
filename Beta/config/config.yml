@@ -1,0 +1,12 @@
+discord:
+  clientId: "1327147372081447024"
+  clientSecret: "rnvT9kNHQqcBB3FduxaPNk2vjavIS8Z8"
+  callbackUrl: "http://localhost:3000/auth/discord/callback"
+  botToken: "MTMyNzE0NzM3MjA4MTQ0NzAyNA.GHbWb_.hHiBDSPC2jDwcsxL_qBXNpC4yCZL7gCrwVH_j8"
+
+server:
+  port: 3000
+  sessionSecret: "C%cLyxYb&2S%^p!gmnjPD4Dj*%Km6qo85GtYXRF%#7I6T"
+
+database:
+  uri: "mongodb://localhost:27017/hex-license"

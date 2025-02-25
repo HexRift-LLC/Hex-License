@@ -3,58 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Hex License</title>
+    <title>Hex License - Dashboard</title>
     <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="dashboard-body">
-    <%- include('partials/navbar') %>
-    <div class="dashboard-container">
-        <div class="stats-grid">
-            <div class="glass-card stat-card">
-                <i class="fas fa-key"></i>
-                <div class="stat-info">
-                    <h3>Active Licenses</h3>
-                    <p class="stat-number"><%= activeLicenses %></p>
+<body class="dark-theme">
+    <nav class="navbar">
+        <div class="logo">Hex License</div>
+        <div class="nav-links">
+            <a href="/dashboard" class="active">Dashboard</a>
+            <% if (user.isStaff === true) { %>
+                <a href="/staff">Staff Panel</a>
+            <% } %>
+            <a href="/auth/logout" class="logout-btn">Logout</a>
+        </div>
+    </nav>
+    
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Welcome, <%= user.username %></h1>
+            <div class="user-stats">
+                <div class="stat-box">
+                    <span class="stat-number"><%= licenses.length %></span>
+                    <span class="stat-label">Total Licenses</span>
                 </div>
-            </div>
-            <div class="glass-card stat-card">
-                <i class="fas fa-users"></i>
-                <div class="stat-info">
-                    <h3>Total Users</h3>
-                    <p class="stat-number"><%= totalUsers %></p>
-                </div>
-            </div>
-            <div class="glass-card stat-card">
-                <i class="fas fa-clock"></i>
-                <div class="stat-info">
-                    <h3>Uptime</h3>
-                    <p class="stat-number">99.9%</p>
+                <div class="stat-box">
+                    <span class="stat-number"><%= licenses.filter(l => l.isActive).length %></span>
+                    <span class="stat-label">Active Licenses</span>
                 </div>
             </div>
         </div>
 
-        <div class="glass-card activity-card">
-            <h2>Recent Activity</h2>
-            <div class="activity-list">
-                <% activities.forEach(activity => { %>
-                <div class="activity-item">
-                    <div class="activity-icon">
-                        <i class="fas fa-circle-dot"></i>
+        <div class="license-section">
+            <h2>Your Licenses</h2>
+            <div class="license-cards">
+                <% licenses.forEach(license => { %>
+                    <div class="license-card <%= license.isActive ? 'active' : 'inactive' %>">
+                        <div class="license-header">
+                            <span class="status-badge <%= license.isActive ? 'active' : 'inactive' %>">
+                                <%= license.isActive ? 'Active' : 'Inactive' %>
+                            </span>
+                        </div>
+                        
+                        <div class="license-info">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">License Key</span>
+                                    <div class="key-container">
+                                        <code class="key-text"><%= license.key %></code>
+                                        <button class="copy-btn" onclick="copyKey('<%= license.key %>')">
+                                            <i class="fas fa-copy"> Copy</i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Product</span>
+                                    <span class="info-value product-name"><%= license.product %></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">HWID</span>
+                                    <span class="info-value <%= license.hwid ? 'hwid-bound' : 'hwid-unbound' %>">
+                                        <%= license.hwid || 'Not bound' %>
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Created</span>
+                                    <span class="info-value"><%= license.createdAt.toLocaleDateString() %></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="activity-details">
-                        <p><strong><%= activity.user %></strong> <%= activity.action %></p>
-                        <span class="activity-time"><%= activity.date %></span>
-                    </div>
-                </div>
                 <% }) %>
             </div>
-        </div>
-    </div>
+            
 
-    <div class="particles" id="particles-js"></div>
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="/js/particles-config.js"></script>
+    <script>
+        function copyKey(key) {
+            navigator.clipboard.writeText(key);
+            showToast('License key copied!');
+        }
+
+        async function resetHWID(licenseId) {
+            if (!confirm('Are you sure you want to reset the HWID?')) return;
+            
+            try {
+                const response = await fetch(`/api/licenses/${licenseId}/reset-hwid`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    window.location.reload();
+                }
+            } catch (error) {
+                showToast('Failed to reset HWID');
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
 </body>
 </html>

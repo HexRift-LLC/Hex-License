@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Hex License</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <%- include('partials/navbar') %>
+    <div class="dashboard-container">
+        <div class="stats-grid">
+            <div class="glass-card stat-card">
+                <i class="fas fa-key"></i>
+                <div class="stat-info">
+                    <h3>Active Licenses</h3>
+                    <p class="stat-number"><%= activeLicenses %></p>
+                </div>
+            </div>
+            <div class="glass-card stat-card">
+                <i class="fas fa-users"></i>
+                <div class="stat-info">
+                    <h3>Total Users</h3>
+                    <p class="stat-number"><%= totalUsers %></p>
+                </div>
+            </div>
+            <div class="glass-card stat-card">
+                <i class="fas fa-clock"></i>
+                <div class="stat-info">
+                    <h3>Uptime</h3>
+                    <p class="stat-number">99.9%</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card activity-card">
+            <h2>Recent Activity</h2>
+            <div class="activity-list">
+                <% activities.forEach(activity => { %>
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-circle-dot"></i>
+                    </div>
+                    <div class="activity-details">
+                        <p><strong><%= activity.user %></strong> <%= activity.action %></p>
+                        <span class="activity-time"><%= activity.date %></span>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+
+    <div class="particles" id="particles-js"></div>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="/js/particles-config.js"></script>
+</body>
+</html>
