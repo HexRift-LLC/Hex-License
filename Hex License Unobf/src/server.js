@@ -7,10 +7,14 @@ const yaml = require("yaml");
 const fs = require("fs");
 const figlet = require("figlet");
 const path = require("path");
+const axios = require("axios");
 
 const configPath = path.join(__dirname, "../config/config.yml");
 const config = yaml.parse(fs.readFileSync(configPath, "utf8"));
 const app = express();
+
+const PRODUCT_ID = "Hex License";
+const currentVersion = "1.0.0";
 
 function displayWelcome() {
   console.clear();
@@ -33,76 +37,117 @@ function displayWelcome() {
   console.log(chalk.red("━".repeat(70)), "\n");
 }
 
-displayWelcome();
+async function checkVersion() {
+  try {
+    const response = await axios.get(
+      `https://hexarion.net/api/version/${PRODUCT_ID}?current=${currentVersion}`,
+      {
+        headers: {
+          "x-api-key": "8IOLaAYzGJNwcYb@bm1&WOcr%aK5!O",
+        },
+      }
+    );
 
-// Database connection with error handling
-mongoose
-  .connect(config.mongodb.uri)
-  .then(() => {
-    console.log(chalk.green("[Database]"), "MongoDB connected successfully");
-  })
-  .catch((err) => {
-    console.error(chalk.red("[Database]"), "MongoDB connection error:", err);
+    if (!response.data.version) {
+      console.log(chalk.yellow("[Updater]"), "Version information not available");
+      return;
+    }
+
+    if (response.data.same) {
+      console.log(chalk.green("[Updater]"), `Hex License (v${currentVersion}) is up to date!`);
+      return true;
+    } else {
+      console.log(chalk.red("[Updater]"), 
+        `Hex License (v${currentVersion}) is outdated. Update to v${response.data.version}.`);
+      process.exit(1);
+    }
+  } catch (error) {
+    console.log(chalk.red("[Updater]"), "Version check failed:", 
+      error.response?.data?.error || error.message);
+    process.exit(1);
+  }
+}
+
+function startServer() {
+  // Database connection
+  mongoose
+    .connect(config.mongodb.uri)
+    .then(() => {
+      console.log(chalk.green("[Database]"), "MongoDB connected successfully");
+    })
+    .catch((err) => {
+      console.error(chalk.red("[Database]"), "MongoDB connection error:", err);
+      process.exit(1);
+    });
+
+  // Middleware
+  app.set("view engine", "ejs");
+  app.use(express.static("public"));
+  app.use(express.json());
+  app.use(
+    session({
+      secret: config.server.session_secret,
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Routes
+  app.use("/", require("./routes/index"));
+  app.use("/dashboard", require("./routes/dashboard"));
+  app.use("/keys", require("./routes/keys"));
+  app.use('/licenses', require('./routes/licenses'));
+  app.use("/auth", require("./routes/auth"));
+  app.use("/api", require("./routes/api"));
+
+  // Discord Bot Setup
+  const { Client, GatewayIntentBits } = require("discord.js");
+  const client = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
   });
 
+  client.once("ready", () => {
+    console.log(chalk.blue("[Bot]"), `Logged in as ${client.user.tag}`);
+  });
 
-// Middleware
-app.set("view engine", "ejs");
-app.use(express.static("public"));
-app.use(express.json());
-app.use(
-  session({
-    secret: config.server.session_secret,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
+  client.login(config.discord.bot_token).catch((err) => {
+    console.error(chalk.red("[Bot]"), "Failed to login to Discord:", err);
+  });
 
-// Routes
-app.use("/", require("./routes/index"));
-app.use("/dashboard", require("./routes/dashboard"));
-app.use("/keys", require("./routes/keys"));
-app.use('/licenses', require('./routes/licenses'));
-app.use("/auth", require("./routes/auth"));
-app.use("/api", require("./routes/api"));
-
-// Discord Bot Setup
-const { Client, GatewayIntentBits } = require("discord.js");
-const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
-});
-
-client.once("ready", () => {
-  console.log(chalk.blue("[Bot]"), `Logged in as ${client.user.tag}`);
-});
-
-client.login(config.discord.bot_token).catch((err) => {
-  console.error(chalk.red("[Bot]"), "Failed to login to Discord:", err);
-});
-
-// Start Server
-app.listen(config.server.port, () => {
-  console.log(
-    chalk.green("[System]"),
-    `Server running on port ${config.server.port}`
-  );
-});
-
-// Protected route middleware
-const protectStaffRoutes = (req, res, next) => {
+  // Protected route middleware
+  const protectStaffRoutes = (req, res, next) => {
     if (!req.isAuthenticated()) {
-        return res.redirect('/auth/discord');
+      return res.redirect('/auth/discord');
     }
-    
+      
     const isAuthorized = req.user.isStaff || req.user.discordId === config.discord.owner_id;
     if (!isAuthorized) {
-        return res.redirect('/dashboard');
+      return res.redirect('/dashboard');
     }
     next();
-};
+  };
 
-// Apply protection to staff routes
-app.use('/keys/*', protectStaffRoutes);
-app.use('/licenses/*', protectStaffRoutes);
+  // Apply protection to staff routes
+  app.use('/keys/*', protectStaffRoutes);
+  app.use('/licenses/*', protectStaffRoutes);
+
+  // Start Server
+  app.listen(config.server.port, () => {
+    console.log(
+      chalk.green("[System]"),
+      `Server running on port ${config.server.port}`
+    );
+  });
+}
+
+// Initial sequence
+async function initialize() {
+  displayWelcome();
+  await checkVersion();
+  startServer();
+}
+
+
+initialize();
