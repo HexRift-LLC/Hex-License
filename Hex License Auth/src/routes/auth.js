@@ -6,6 +6,7 @@ const User = require('../models/User');
 const yaml = require('yaml');
 const fs = require('fs');
 const path = require('path');
+const { Client } = require('discord.js');
 
 const configPath = path.join(__dirname, '../../config/config.yml');
 const config = yaml.parse(fs.readFileSync(configPath, 'utf8'));
@@ -61,6 +62,33 @@ router.get('/discord/callback',
         failureRedirect: '/'
     })
 );
+
+router.get('/discord/members', async (req, res) => {
+    if (!req.user?.isStaff) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const response = await fetch(`https://discord.com/api/v10/guilds/${config.discord.guild_id}/members?limit=1000`, {
+            headers: {
+                Authorization: `Bot ${config.discord.bot_token}`
+            }
+        });
+        
+        const members = await response.json();
+        const membersList = members.map(member => ({
+            id: member.user.id,
+            username: member.user.username,
+            discriminator: member.user.discriminator || '0'
+        })).filter(member => member.id !== config.discord.bot_token);
+
+        res.json({ members: membersList });
+    } catch (error) {
+        console.error('Discord members fetch error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 router.get('/logout', (req, res) => {
     req.logout((err) => {

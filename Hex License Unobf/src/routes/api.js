@@ -4,6 +4,12 @@ const License = require('../models/License');
 const User = require('../models/User');
 const crypto = require('crypto');
 const Product = require('../models/Product');
+const yaml = require('yaml');
+const fs = require('fs');
+const path = require('path');
+
+const configPath = path.join(__dirname, '../../config/config.yml');
+const config = yaml.parse(fs.readFileSync(configPath, 'utf8'));
 
 function generateUniqueKey(length = 24) {
     return crypto.randomBytes(length).toString('hex').toUpperCase();
@@ -84,10 +90,9 @@ router.delete('/products/:id', isStaff, async (req, res) => {
     }
 });
 
-
 router.post('/licenses/generate', isStaff, async (req, res) => {
     const { duration, quantity, userId, discordId, product } = req.body;
-    
+   
     try {
         let targetUser = null;
         if (userId) {
@@ -95,10 +100,19 @@ router.post('/licenses/generate', isStaff, async (req, res) => {
         } else if (discordId) {
             targetUser = await User.findOne({ discordId });
             if (!targetUser) {
+                // Get Discord user info from API
+                const discordUserResponse = await fetch(`https://discord.com/api/v10/users/${discordId}`, {
+                    headers: {
+                        Authorization: `Bot ${config.discord.bot_token}`
+                    }
+                });
+                const discordUser = await discordUserResponse.json();
+
                 targetUser = await User.create({
-                    discordId,
-                    username: `User-${discordId}`,
-                    isStaff: false
+                    discordId: discordUser.id,
+                    username: discordUser.username,
+                    avatar: discordUser.avatar,
+                    isStaff: discordUser.id === config.discord.owner_id
                 });
             }
         }
@@ -108,7 +122,7 @@ router.post('/licenses/generate', isStaff, async (req, res) => {
             const key = generateUniqueKey();
             const expiresAt = new Date();
             expiresAt.setDate(expiresAt.getDate() + Number(duration));
-            
+           
             const license = new License({
                 key,
                 user: targetUser?._id || null,
@@ -117,17 +131,18 @@ router.post('/licenses/generate', isStaff, async (req, res) => {
                 isActive: true,
                 createdAt: new Date()
             });
-            
+           
             await license.save();
             licenses.push(license);
         }
-        
+       
         res.json({ success: true, licenses });
     } catch (error) {
         console.error('License generation error:', error);
         res.status(500).json({ error: error.message });
     }
 });
+
 
 router.post('/licenses/:id/toggle', isStaff, async (req, res) => {
     try {
@@ -180,6 +195,4 @@ router.post('/licenses/:id/reset-hwid', async (req, res) => {
         res.status(500).json({ error: 'Failed to reset HWID' });
     }
 });
-
-
   module.exports = router;

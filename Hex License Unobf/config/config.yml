@@ -11,6 +11,7 @@ discord:
   client_secret: "Your CLIENT SECRET HERE"
   callback_url: "http://localhost:3000/auth/discord/callback"
   owner_id: "Your Discord ID"
+  guild_id: "1323896546538033233"
 
 license:
   key_length: 24

@@ -148,6 +148,4 @@ async function initialize() {
   await checkVersion();
   startServer();
 }
-
-
 initialize();

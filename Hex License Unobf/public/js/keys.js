@@ -82,3 +82,28 @@ document.getElementById('generateForm').addEventListener('submit', async (e) => 
         console.error('Error generating licenses:', error);
     }
 });
+document.addEventListener('DOMContentLoaded', async () => {
+    const discordMembersSelect = document.querySelector('.discord-members-select');
+    
+    try {
+        const response = await fetch('/auth/discord/members');
+        const data = await response.json();
+        
+        if (data.members && Array.isArray(data.members)) {
+            data.members.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.id;
+                option.textContent = `${member.username}`;
+                discordMembersSelect.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Failed to load Discord members:', error);
+    }
+});
+function toggleMenu() {
+    const burger = document.querySelector('.burger');
+    const navLinks = document.querySelector('.nav-links');
+    burger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+    }

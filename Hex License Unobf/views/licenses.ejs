@@ -10,16 +10,20 @@
 <body class="dark-theme">
     <nav class="navbar">
         <div class="logo">Hex License</div>
+        <div class="burger" onclick="toggleMenu()">
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+        </div>
         <div class="nav-links">
-            <a href="/dashboard">Dashboard</a>
+            <a href="/dashboard" >Dashboard</a>
             <% if (user && user.isStaff) { %>
                 <a href="/keys">Key Management</a>
-                <a href="/licenses" class="active">License Management</a>
+                <a href="/licenses"class="active" >License Management</a>
             <% } %>
             <a href="/auth/logout">Logout</a>
         </div>
     </nav>
-    
     <div class="container">
         <div class="card license-management">
             <h2>License Management</h2>
@@ -35,16 +39,22 @@
                         <div class="license-body">
                             <div class="key-section">
                                 <label>License Key:</label>
-                                <code><%= license.key %></code>
+                                <code>
+                                    <%= license.key.substring(0, license.key.length / 3) %>...
+                                  </code>  
+                                  <button class="copy-btn" onclick="copyKey('<%= license.key %>')">
+                                    <i class="fas fa-copy"> Copy</i>
+                                </button>
                             </div>
                             <div class="details">
                                 <p>Expires: <%= license.expiresAt.toLocaleDateString() %></p>
                                 <p>HWID: <%= license.hwid || 'Not bound' %></p>
-                                <p>User: <%= license.user ? license.user.username : 'Unassigned' %></p>
+                                <p>User: <%= license.user ? license.user.username : (license.discordId ? `${license.discordUsername}` : 'Unassigned') %></p>
                             </div>
+                            
                         </div>
                         <div class="license-actions">
-                            <button onclick="toggleLicense('<%= license._id %>')" class="toggle-btn">Toggle Status</button>
+                            <button onclick="toggleLicense('<%= license._id %>')" class="toggle-btn">Kill Key</button>
                             <button onclick="resetHWID('<%= license._id %>')" class="reset-hwid-btn">Reset HWID</button>
                             <button onclick="deleteLicense('<%= license._id %>')" class="delete-btn">Delete</button>
                         </div>

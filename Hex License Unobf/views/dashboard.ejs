@@ -12,13 +12,18 @@
 <body class="dark-theme">
     <nav class="navbar">
         <div class="logo">Hex License</div>
+        <div class="burger" onclick="toggleMenu()">
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+        </div>
         <div class="nav-links">
             <a href="/dashboard" class="active">Dashboard</a>
             <% if (user && user.isStaff) { %>
                 <a href="/keys">Key Management</a>
                 <a href="/licenses">License Management</a>
-                <% } %>
-                    <a href="/auth/logout">Logout</a>
+            <% } %>
+            <a href="/auth/logout">Logout</a>
         </div>
     </nav>
 
@@ -58,7 +63,9 @@
                                 <div class="info-item">
                                     <span class="info-label">License Key</span>
                                     <div class="key-container">
-                                        <code class="key-text"><%= license.key %></code>
+                                        <code class="key-text">
+                                            <%= license.key.substring(0, license.key.length / 2) %>...
+                                          </code>                                          
                                         <button class="copy-btn" onclick="copyKey('<%= license.key %>')">
                                             <i class="fas fa-copy"> Copy</i>
                                         </button>
@@ -73,8 +80,8 @@
                                 <div class="info-item">
                                     <span class="info-label">HWID</span>
                                     <span class="info-value <%= license.hwid ? 'hwid-bound' : 'hwid-unbound' %>">
-                                        <%= license.hwid || 'Not bound' %>
-                                    </span>
+                                        <%= license.hwid ? license.hwid.substring(0, license.hwid.length / 2) : 'Not bound' %>
+                                      </span>
                                 </div>
                                 <div class="info-item">
                                     <span class="info-label">Created</span>
@@ -107,38 +114,7 @@
                 </div>
             </footer>
 
-            <script>
-                function copyKey(key) {
-                    navigator.clipboard.writeText(key);
-                    showToast('License key copied!');
-                }
-
-                async function resetHWID(licenseId) {
-                    try {
-                        const response = await fetch(`/api/licenses/${licenseId}/reset-hwid`, {
-                            method: 'POST'
-                        });
-
-                        if (response.ok) {
-                            showToast('HWID reset successfully.');
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 2000); // Waits 2 seconds before reload
-                        }
-                    } catch (error) {
-                        showToast('Failed to reset HWID');
-                    }
-                }
-
-                function showToast(message) {
-                    const toast = document.createElement('div');
-                    toast.className = 'toast';
-                    toast.textContent = message;
-                    document.body.appendChild(toast);
-                    setTimeout(() => toast.remove(), 3000);
-                }
-
-            </script>
+              <script src="/js/dashboard.js"></script>
 </body>
 
 </html>
