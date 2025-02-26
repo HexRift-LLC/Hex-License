@@ -178,21 +178,21 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error('Error fetching Discord members:', error);
       }
   }
-function showSection(sectionId) {
+  function showSection(sectionId, event) {
     // Hide all sections
     document.querySelectorAll('.staff-section').forEach(section => {
         section.classList.remove('active');
     });
-    
+
     // Remove active class from all buttons
     document.querySelectorAll('.staff-nav-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    
-    // Show selected section and activate button
+
+    // Show selected section
     const selectedSection = document.getElementById(`${sectionId}-section`);
-    const selectedButton = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
-    
     if (selectedSection) selectedSection.classList.add('active');
-    if (selectedButton) selectedButton.classList.add('active');
+
+    // Activate clicked button
+    if (event.currentTarget) event.currentTarget.classList.add('active');
 }
