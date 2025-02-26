@@ -496,12 +496,13 @@ body {
 }
 .toggle-btn,
 .license-actions {
-  padding: 1.5rem;
-  position: relative;
-  border-top: 1px solid var(--border);
   display: flex;
+  justify-content: flex-end;
   gap: 1rem;
+  padding: 1.5rem;
   background: var(--bg-tertiary);
+  border-top: 1px solid var(--border);
+  position: relative;
   z-index: 2;
 }
 /* Action Buttons */
@@ -1180,6 +1181,7 @@ select {
 }
 
 .key-container {
+  position: relative;
   background: var(--bg-tertiary);
   border-radius: 12px;
   padding: 1rem;
@@ -1187,26 +1189,32 @@ select {
   justify-content: space-between;
   align-items: center;
   border: 1px solid var(--border);
+  z-index: 2;
 }
 
 .key-text {
+  position: relative;
   font-family: 'JetBrains Mono', monospace;
   color: var(--accent);
   font-size: 0.9rem;
   letter-spacing: 0.05em;
+  z-index: 2;
 }
 
 .copy-btn {
+  position: relative;
   background: rgba(99, 102, 241, 0.1);
   color: var(--accent);
   border: none;
   padding: 0.5rem 1rem;
+  pointer-events: auto;
   border-radius: 8px;
   cursor: pointer;
   transition: all var(--transition-normal);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  z-index: 3;
 }
 
 .copy-btn:hover {
@@ -1243,4 +1251,38 @@ select {
 .copyright {
   color: var(--text-secondary);
   font-size: 0.875rem;
+}
+.reset-hwid-btn {
+  position: relative;
+  z-index: 3;
+  pointer-events: auto;
+  background: var(--gradient-warning);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  width: 100%;
+}
+
+.reset-hwid-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-warning);
+}
+
+.reset-hwid-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--bg-tertiary);
+}
+
+.info-item {
+  position: relative;
+  z-index: 2;
+}
+.reset-countdown {
+  font-size: 0.8rem;
+  opacity: 0.8;
 }

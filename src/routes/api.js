@@ -15,47 +15,55 @@ const isStaff = (req, res, next) => {
     return res.status(403).json({ error: 'Unauthorized' });
 };
 
-// Verify license
 router.post('/verify', async (req, res) => {
     const { key, hwid, product } = req.body;
-    
+
     try {
         const license = await License.findOne({ key });
-        
+
         if (!license) {
+            console.log(`[SERVER] License not found for key: ${key}`);
             return res.status(404).json({ error: 'License not found' });
         }
 
-        // Add auth log entry
-        license.authLogs.push({
-            status: license.isActive ? 'SUCCESS' : 'FAILED',
-            hwid: hwid,
-            message: license.isActive ? 'Valid authentication' : 'License inactive'
-        });
-        await license.save();
-
         if (license.product !== product) {
+            console.log(`[SERVER] Invalid product: Expected ${license.product}, got ${product}`);
             return res.status(403).json({ error: 'Invalid product' });
         }
 
         if (!license.isActive) {
+            console.log(`[SERVER] License for key ${key} is inactive.`);
             return res.status(403).json({ error: 'License is inactive' });
         }
 
-        if (license.hwid && license.hwid !== hwid) {
+        // Fixing HWID Binding Logic
+        if (!license.hwid) {
+            console.log(`[SERVER] Binding HWID: ${hwid} to license ${key}`);
+            license.hwid = hwid;
+        } else if (license.hwid !== hwid) {
+            console.log(`[SERVER] HWID mismatch for key ${key}. Expected: ${license.hwid}, Received: ${hwid}`);
             return res.status(403).json({ error: 'HWID mismatch' });
         }
 
-        if (!license.hwid) {
-            license.hwid = hwid;
-            await license.save();
-        }
+        // Save HWID update if newly bound
+        await license.save();
 
+        // Add auth log entry
+        license.authLogs.push({
+            status: 'SUCCESS',
+            hwid: hwid,
+            message: 'Valid authentication',
+        });
+
+        console.log(`[SERVER] License ${key} authenticated successfully.`);
         return res.json({ valid: true });
+
     } catch (error) {
-        return res.status(500).json({ error: 'Server error' });
+        console.error(`[SERVER] Unexpected error: ${error.message}`, error);
+        return res.status(500).json({ error: 'Internal server error', details: error.message });
     }
 });
+
 
 router.post('/products', isStaff, async (req, res) => {
     try {
@@ -140,18 +148,38 @@ router.delete('/licenses/:id', isStaff, async (req, res) => {
         res.status(500).json({ error: 'Failed to delete license' });
     }
 });
-
 router.post('/licenses/:id/reset-hwid', async (req, res) => {
     try {
         const license = await License.findById(req.params.id);
-        if (license.user.toString() !== req.user._id.toString() && !req.user.isStaff) {
+        
+        // Staff can reset without restrictions
+        if (req.user.isStaff) {
+            license.hwid = null;
+            license.lastHwidReset = new Date();
+            await license.save();
+            return res.json({ success: true });
+        }
+
+        // Regular user checks
+        if (license.user.toString() !== req.user._id.toString()) {
             return res.status(403).json({ error: 'Unauthorized' });
         }
         
+        // Cooldown check only for regular users
+        const cooldownPeriod = 48 * 60 * 60 * 1000;
+        if (license.lastHwidReset && (Date.now() - new Date(license.lastHwidReset).getTime()) < cooldownPeriod) {
+            return res.status(429).json({ error: 'HWID reset is on cooldown' });
+        }
+
         license.hwid = null;
+        license.lastHwidReset = new Date();
         await license.save();
+        
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: 'Failed to reset HWID' });
     }
-});module.exports = router;
+});
+
+
+  module.exports = router;

@@ -15,6 +15,17 @@ const isAuthenticated = (req, res, next) => {
 
 router.get('/', isAuthenticated, async (req, res) => {
     const licenses = await License.find({ user: req.user._id });
+    res.locals.getTimeUntilReset = function(lastReset) {
+        const resetTime = new Date(lastReset);
+        const nextReset = new Date(resetTime.getTime() + (2 * 24 * 60 * 60 * 1000));
+        const now = new Date();
+        const diff = nextReset - now;
+        
+        const hours = Math.floor(diff / (60 * 60 * 1000));
+        const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
+        
+        return `in ${hours}h ${minutes}m`;
+    };
     res.render('dashboard', { 
         user: req.user, 
         licenses,

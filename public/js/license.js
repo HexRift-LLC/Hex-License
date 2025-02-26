@@ -12,7 +12,6 @@ async function toggleLicense(licenseId) {
 }
 
 async function deleteLicense(licenseId) {
-    if (confirm('Are you sure you want to delete this license?')) {
         try {
             const response = await fetch(`/api/licenses/${licenseId}`, {
                 method: 'DELETE'
@@ -24,4 +23,30 @@ async function deleteLicense(licenseId) {
             console.error('Error deleting license:', error);
         }
     }
+async function resetHWID(licenseId) {
+    try {
+        const response = await fetch(`/api/licenses/${licenseId}/reset-hwid`, {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            showToast('HWID reset successfully.');
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        } else if (response.status === 429) {
+            showToast('HWID reset is currently on cooldown. Please try again later.');
+        }
+    } catch (error) {
+        showToast('Failed to reset HWID');
+    }
+}
+
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
 }
