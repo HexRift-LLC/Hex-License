@@ -1135,17 +1135,52 @@ select {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 2rem;
+  text-align: center;
 }
 
+/* Responsive License Cards Grid */
 .license-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
   gap: 20px;
   padding: 20px;
+  justify-content: center; /* Centers when less than 3 cards */
+  align-items: center;
+  place-items: center; /* Ensures single or two cards are centered */
+  width: 100%;
+  max-width: 1200px; /* Prevents excessive stretching */
+  margin: 0 auto; /* Centers the entire grid */
 }
 
+/* License Card Body */
 .license-body {
   padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  min-width: 300px;
+}
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .license-management {
+    padding: 1.5rem;
+  }
+
+  .license-cards {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjusts to screen size */
+    gap: 15px;
+    padding: 10px;
+  }
+
+  .license-body {
+    padding: 1rem;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .license-cards {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 2 per row */
+  }
 }
 
 .key-section {

@@ -6,11 +6,11 @@ mongodb:
   uri: "mongodb://localhost:27017/hex-license"
 
 discord:
-  bot_token: "Your BOT TOKEN HERE"
-  client_id: "Your CLIENT ID HERE"
-  client_secret: "Your CLIENT SECRET HERE"
+  bot_token: "MTMzOTg3ODA5NzQzNjI4MjkxMQ.GF0hhV.QKWLt3v3yP_SM1ob4vEbxgmxnyQ2bsTGDcEXX8"
+  client_id: "1339878097436282911"
+  client_secret: "QXjM8eOqMAvB4DXRF81rjGR9rpgfuyjB"
   callback_url: "http://localhost:3000/auth/discord/callback"
-  owner_id: "Your Discord ID"
+  owner_id: "392855285263499274"
   guild_id: "1323896546538033233"
 
 license:
