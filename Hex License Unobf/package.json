@@ -1,6 +1,6 @@
 {
   "name": "hex-license",
-  "version": "2.2.2",
+  "version": "3.0.0",
   "description": "",
   "main": "src/server.js",
   "scripts": {

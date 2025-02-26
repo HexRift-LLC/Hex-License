@@ -14,7 +14,7 @@ const config = yaml.parse(fs.readFileSync(configPath, "utf8"));
 const app = express();
 
 const PRODUCT_ID = "Hex License";
-const currentVersion = "2.2.2";
+const currentVersion = "3.0.0";
 
 function displayWelcome() {
   console.clear();
@@ -97,8 +97,7 @@ function startServer() {
   // Routes
   app.use("/", require("./routes/index"));
   app.use("/dashboard", require("./routes/dashboard"));
-  app.use("/keys", require("./routes/keys"));
-  app.use('/licenses', require('./routes/licenses'));
+  app.use("/staff", require("./routes/staff"));
   app.use("/auth", require("./routes/auth"));
   app.use("/api", require("./routes/api"));
 
@@ -130,8 +129,7 @@ function startServer() {
   };
 
   // Apply protection to staff routes
-  app.use('/keys/*', protectStaffRoutes);
-  app.use('/licenses/*', protectStaffRoutes);
+  app.use('/staff/*', protectStaffRoutes);
 
   // Start Server
   app.listen(config.server.port, () => {
