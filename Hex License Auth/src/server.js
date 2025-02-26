@@ -15,7 +15,7 @@ const config = yaml.parse(fs.readFileSync(configPath, "utf8"));
 const app = express();
 
 const PRODUCT_ID = "Hex License";
-const currentVersion = "1.0.0";
+const currentVersion = "2.2.2";
 
 function displayWelcome() {
   console.clear();

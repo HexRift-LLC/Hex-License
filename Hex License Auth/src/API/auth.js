@@ -54,7 +54,7 @@ class WebhookManager {
 
 class LicenseChecker {
     #webhookManager;
-    #currentVersion = '1.0.0';
+    #currentVersion = '2.2.2';
     #baseUrl = 'https://api.hexarion.net/api';
     #hwid;
 
