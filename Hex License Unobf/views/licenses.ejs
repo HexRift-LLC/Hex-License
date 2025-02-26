@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex License - License Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+   <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+<body class="dark-theme">
+    <nav class="navbar">
+        <div class="logo">Hex License</div>
+        <div class="nav-links">
+            <a href="/dashboard">Dashboard</a>
+            <% if (user && user.isStaff) { %>
+                <a href="/keys">Key Management</a>
+                <a href="/licenses" class="active">License Management</a>
+            <% } %>
+            <a href="/auth/logout">Logout</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="card license-management">
+            <h2>License Management</h2>
+            <div class="license-cards">
+                <% licenses.forEach(license => { %>
+                    <div class="license-card <%= license.isActive ? 'active' : 'inactive' %>">
+                        <div class="license-header">
+                            <span class="status-badge <%= license.isActive ? 'active' : 'inactive' %>">
+                                <%= license.isActive ? 'Active' : 'Inactive' %>
+                            </span>
+                            <span class="product-badge"><%= license.product %></span>
+                        </div>
+                        <div class="license-body">
+                            <div class="key-section">
+                                <label>License Key:</label>
+                                <code><%= license.key %></code>
+                            </div>
+                            <div class="details">
+                                <p>Expires: <%= license.expiresAt.toLocaleDateString() %></p>
+                                <p>HWID: <%= license.hwid || 'Not bound' %></p>
+                                <p>User: <%= license.user ? license.user.username : 'Unassigned' %></p>
+                            </div>
+                        </div>
+                        <div class="license-actions">
+                            <button onclick="toggleLicense('<%= license._id %>')" class="toggle-btn">Toggle Status</button>
+                            <button onclick="resetHWID('<%= license._id %>')" class="reset-hwid-btn">Reset HWID</button>
+                            <button onclick="deleteLicense('<%= license._id %>')" class="delete-btn">Delete</button>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="copyright">© 2023 - <%= new Date().getFullYear() %> <%= config.footer.copyright %> by <%= config.footer.company %>.</p>
+        </div>
+    </footer>
+    <script src="/js/license.js"></script>
+</body>
+</html>

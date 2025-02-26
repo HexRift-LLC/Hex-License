@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex License - Key Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+   <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+<body class="dark-theme">
+    <nav class="navbar">
+        <div class="logo">Hex License</div>
+        <div class="nav-links">
+            <a href="/dashboard">Dashboard</a>
+            <% if (user && user.isStaff) { %>
+                <a href="/keys" class="active">Key Management</a>
+                <a href="/licenses">License Management</a>
+            <% } %>
+            <a href="/auth/logout">Logout</a>
+        </div>
+    </nav>
+      <div class="container">
+          <div class="staff-grid">
+              <div class="card action-card">
+                  <h2>Products Management</h2>
+                  <form id="productForm" class="staff-form">
+                      <div class="form-group">
+                          <label>Product Name</label>
+                          <input type="text" name="productName" required placeholder="Enter product name">
+                      </div>
+                      <button type="submit" class="btn-primary">Add Product</button>
+                  </form>
+                  <div class="products-list">
+                      <h3>Existing Products</h3>
+                      <% products.forEach(product => { %>
+                          <div class="product-item">
+                              <span><%= product.name %></span>
+                              <button class="delete-btn" onclick="deleteProduct('<%= product._id %>')">Delete</button>
+                          </div>
+                      <% }) %>
+                  </div>
+              </div>
+              <div class="card action-card">
+                  <h2>Generate License</h2>
+                  <form id="generateForm" class="staff-form">
+                      <div class="form-group">
+                          <label>Duration (days)</label>
+                          <input type="number" name="duration" min="1" required>
+                      </div>
+                      <div class="form-group">
+                          <label>Quantity</label>
+                          <input type="number" name="quantity" min="1" max="100" required>
+                      </div>
+                      <div class="form-group">
+                          <label>Product</label>
+                          <select name="product" class="product-select">
+                              <option value="">Select Product</option>
+                              <% products.forEach(product => { %>
+                                  <option value="<%= product.name %>"><%= product.name %></option>
+                              <% }) %>
+                          </select>
+                          <div class="or-divider">OR</div>
+                          <input type="text" name="newProduct" placeholder="Enter new product name" class="product-input">
+                      </div>
+                      <div class="form-group">
+                          <label>Assign to User</label>
+                          <select name="userId" class="user-select">
+                              <option value="">Select User</option>
+                              <% users.forEach(user => { %>
+                                  <option value="<%= user._id %>"><%= user.username %> (<%= user.discordId %>)</option>
+                              <% }) %>
+                          </select>
+                          <div class="or-divider">OR</div>
+                          <input type="text" name="discordId" placeholder="Enter Discord ID" class="discord-id-input">
+                      </div>
+                      <button type="submit" class="btn-primary">Generate Keys</button>
+                  </form>
+            </div>
+            <div class="card stats-card">
+                <h2>Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-value"><%= activeKeys %></span>
+                        <span class="stat-label">Active Keys</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value"><%= totalUsers %></span>
+                        <span class="stat-label">Total Users</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="copyright">© 2023 - <%= new Date().getFullYear() %> <%= config.footer.copyright %> by <%= config.footer.company %>.</p>
+        </div>
+    </footer>
+    <script src="/js/keys.js"></script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex License - Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+
+<body class="dark-theme">
+    <nav class="navbar">
+        <div class="logo">Hex License</div>
+        <div class="nav-links">
+            <a href="/dashboard" class="active">Dashboard</a>
+            <% if (user && user.isStaff) { %>
+                <a href="/keys">Key Management</a>
+                <a href="/licenses">License Management</a>
+                <% } %>
+                    <a href="/auth/logout">Logout</a>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Welcome, <%= user.username %>
+            </h1>
+            <div class="user-stats">
+                <div class="stat-box">
+                    <span class="stat-number">
+                        <%= licenses.length %>
+                    </span>
+                    <span class="stat-label">Total Licenses</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">
+                        <%= licenses.filter(l=> l.isActive).length %>
+                    </span>
+                    <span class="stat-label">Active Licenses</span>
+                </div>
+            </div>
+        </div>
+        <div class="license-section">
+            <h2>Your Licenses</h2>
+            <div class="license-cards">
+                <% licenses.forEach(license=> { %>
+                    <div class="license-card <%= license.isActive ? 'active' : 'inactive' %>">
+                        <div class="license-header">
+                            <span class="status-badge <%= license.isActive ? 'active' : 'inactive' %>">
+                                <%= license.isActive ? 'Active' : 'Inactive' %>
+                            </span>
+                        </div>
+
+                        <div class="license-info">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">License Key</span>
+                                    <div class="key-container">
+                                        <code class="key-text"><%= license.key %></code>
+                                        <button class="copy-btn" onclick="copyKey('<%= license.key %>')">
+                                            <i class="fas fa-copy"> Copy</i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Product</span>
+                                    <span class="info-value product-name">
+                                        <%= license.product %>
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">HWID</span>
+                                    <span class="info-value <%= license.hwid ? 'hwid-bound' : 'hwid-unbound' %>">
+                                        <%= license.hwid || 'Not bound' %>
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Created</span>
+                                    <span class="info-value">
+                                        <%= license.createdAt.toLocaleDateString() %>
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <button onclick="resetHWID('<%= license._id %>')" class="reset-hwid-btn"
+                                        <%=license.lastHwidReset && (new Date() - new Date(license.lastHwidReset)) < (2
+                                        * 24 * 60 * 60 * 1000) ? 'disabled' : '' %>
+                                        >
+                                        Reset HWID
+                                        <% if (license.lastHwidReset) { %>
+                                            <span class="reset-countdown">
+                                                (Available <%= getTimeUntilReset(license.lastHwidReset) %>)
+                                            </span>
+                                            <% } %>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+            <footer class="footer">
+                <div class="footer-content">
+                    <p class="copyright">© 2023 - <%= new Date().getFullYear() %>
+                            <%= config.footer.copyright %> by <%= config.footer.company %>.</p>
+                </div>
+            </footer>
+
+            <script>
+                function copyKey(key) {
+                    navigator.clipboard.writeText(key);
+                    showToast('License key copied!');
+                }
+
+                async function resetHWID(licenseId) {
+                    try {
+                        const response = await fetch(`/api/licenses/${licenseId}/reset-hwid`, {
+                            method: 'POST'
+                        });
+
+                        if (response.ok) {
+                            showToast('HWID reset successfully.');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 2000); // Waits 2 seconds before reload
+                        }
+                    } catch (error) {
+                        showToast('Failed to reset HWID');
+                    }
+                }
+
+                function showToast(message) {
+                    const toast = document.createElement('div');
+                    toast.className = 'toast';
+                    toast.textContent = message;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                }
+
+            </script>
+</body>
+
+</html>
