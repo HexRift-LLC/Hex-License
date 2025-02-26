@@ -161,7 +161,7 @@
                                 <div class="details">
                                     <p>Expires: <%= license.expiresAt.toLocaleDateString() %>
                                     </p>
-                                    <p>HWID: <%= license.hwid || 'Not bound' %>
+                                    <p>HWID: <%= license.hwid ? license.hwid.substring(0, license.hwid.length / 4) + '...' : 'Not bound' %>
                                     </p>
                                     <p>User: <%= license.user ? license.user.username : (license.discordId ?
                                             license.discordUsername : 'Unassigned' ) %>
