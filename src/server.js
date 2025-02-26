@@ -1,5 +1,4 @@
 const chalk = require("chalk");
-
 const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
@@ -64,7 +63,8 @@ app.use(passport.session());
 // Routes
 app.use("/", require("./routes/index"));
 app.use("/dashboard", require("./routes/dashboard"));
-app.use("/staff", require("./routes/staff"));
+app.use("/keys", require("./routes/keys"));
+app.use('/licenses', require('./routes/licenses'));
 app.use("/auth", require("./routes/auth"));
 app.use("/api", require("./routes/api"));
 
@@ -89,3 +89,20 @@ app.listen(config.server.port, () => {
     `Server running on port ${config.server.port}`
   );
 });
+
+// Protected route middleware
+const protectStaffRoutes = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        return res.redirect('/auth/discord');
+    }
+    
+    const isAuthorized = req.user.isStaff || req.user.discordId === config.discord.owner_id;
+    if (!isAuthorized) {
+        return res.redirect('/dashboard');
+    }
+    next();
+};
+
+// Apply protection to staff routes
+app.use('/keys/*', protectStaffRoutes);
+app.use('/licenses/*', protectStaffRoutes);

@@ -5,16 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hex License - Dashboard</title>
     <link rel="stylesheet" href="/css/style.css">
+   <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
 <body class="dark-theme">
     <nav class="navbar">
         <div class="logo">Hex License</div>
         <div class="nav-links">
             <a href="/dashboard" class="active">Dashboard</a>
-            <% if (user.isStaff === true) { %>
-                <a href="/staff">Staff Panel</a>
+            <% if (user && user.isStaff) { %>
+                <a href="/keys">Key Management</a>
+                <a href="/licenses">License Management</a>
             <% } %>
-            <a href="/auth/logout" class="logout-btn">Logout</a>
+            <a href="/auth/logout">Logout</a>
         </div>
     </nav>
     
@@ -75,7 +77,11 @@
                     </div>
                 <% }) %>
             </div>
-            
+            <footer class="footer">
+                <div class="footer-content">
+                    <p class="copyright">© 2023 - <%= new Date().getFullYear() %> <%= config.footer.copyright %> by <%= config.footer.company %>.</p>
+                </div>
+            </footer>
 
     <script>
         function copyKey(key) {
@@ -109,3 +115,4 @@
     </script>
 </body>
 </html>
+

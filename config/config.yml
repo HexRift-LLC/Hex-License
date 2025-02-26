@@ -6,12 +6,17 @@ mongodb:
   uri: "mongodb://localhost:27017/hex-license"
 
 discord:
-  bot_token: "Your BOT TOKEN HERE""
+  bot_token: "Your BOT TOKEN HERE"
   client_id: "Your CLIENT ID HERE"
   client_secret: "Your CLIENT SECRET HERE"
   callback_url: "http://localhost:3000/auth/discord/callback"
-  owner_id: "Your Discord ID""
+  owner_id: "Your Discord ID"
 
 license:
   key_length: 24
   hwid_enabled: true
+
+footer:
+  copyright: "Hex License"
+  company: "Hexarion"
+
