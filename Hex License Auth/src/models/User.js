@@ -8,6 +8,10 @@ const UserSchema = new mongoose.Schema({
     },
     username: String,
     avatar: String,
+    isBanned: {
+        type: Boolean,
+        default: false
+    },
     isStaff: {
         type: Boolean,
         default: false

@@ -7,6 +7,7 @@ const Product = require('../models/Product');
 const yaml = require('yaml');
 const fs = require('fs');
 const path = require('path');
+const { sendLog } = require('../utils/discord');
 
 const configPath = path.join(__dirname, '../../config/config.yml');
 const config = yaml.parse(fs.readFileSync(configPath, 'utf8'));
@@ -23,176 +24,74 @@ const isStaff = (req, res, next) => {
 
 router.post('/verify', async (req, res) => {
     const { key, hwid, product } = req.body;
-
+    const license = await License.findOne({ key }).populate('user');
+    const username = license.user ? license.user.username : 'No Owner';
+    
     try {
         const license = await License.findOne({ key });
 
         if (!license) {
-            console.log(`[SERVER] License not found for key: ${key}`);
+            sendLog('license_verify_failed', {
+                key: key,
+                reason: 'License not found',
+                product: product,
+                username: username
+            });
             return res.status(404).json({ error: 'License not found' });
         }
 
         if (license.product !== product) {
-            console.log(`[SERVER] Invalid product: Expected ${license.product}, got ${product}`);
+            sendLog('license_verify_failed', {
+                key: key,
+                reason: 'Invalid product',
+                product: product,
+                username: username
+            });
             return res.status(403).json({ error: 'Invalid product' });
         }
 
         if (!license.isActive) {
-            console.log(`[SERVER] License for key ${key} is inactive.`);
+            sendLog('license_verify_failed', {
+                key: key,
+                reason: 'License inactive',
+                product: product,
+                username: username
+            });
             return res.status(403).json({ error: 'License is inactive' });
         }
 
-        // Fixing HWID Binding Logic
         if (!license.hwid) {
-            console.log(`[SERVER] Binding HWID: ${hwid} to license ${key}`);
             license.hwid = hwid;
+            sendLog('license_hwid_bound', {
+                key: key,
+                hwid: hwid,
+                product: product,
+                username: username
+            });
         } else if (license.hwid !== hwid) {
-            console.log(`[SERVER] HWID mismatch for key ${key}. Expected: ${license.hwid}, Received: ${hwid}`);
+            sendLog('license_verify_failed', {
+                key: key,
+                reason: 'HWID mismatch',
+                product: product,
+                username: username
+            });
             return res.status(403).json({ error: 'HWID mismatch' });
         }
 
-        // Save HWID update if newly bound
         await license.save();
 
-        // Add auth log entry
-        license.authLogs.push({
-            status: 'SUCCESS',
+        sendLog('license_verify_success', {
+            key: key,
+            product: product,
             hwid: hwid,
-            message: 'Valid authentication',
+            username: username
         });
 
-        console.log(`[SERVER] License ${key} authenticated successfully.`);
         return res.json({ valid: true });
 
     } catch (error) {
-        console.error(`[SERVER] Unexpected error: ${error.message}`, error);
         return res.status(500).json({ error: 'Internal server error', details: error.message });
     }
 });
 
-
-router.post('/products', isStaff, async (req, res) => {
-    try {
-        const product = new Product({ name: req.body.name });
-        await product.save();
-        res.json({ success: true, product });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to add product' });
-    }
-});
-
-router.delete('/products/:id', isStaff, async (req, res) => {
-    try {
-        await Product.findByIdAndDelete(req.params.id);
-        res.json({ success: true });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to delete product' });
-    }
-});
-
-router.post('/licenses/generate', isStaff, async (req, res) => {
-    const { duration, quantity, userId, discordId, product } = req.body;
-   
-    try {
-        let targetUser = null;
-        if (userId) {
-            targetUser = await User.findById(userId);
-        } else if (discordId) {
-            targetUser = await User.findOne({ discordId });
-            if (!targetUser) {
-                // Get Discord user info from API
-                const discordUserResponse = await fetch(`https://discord.com/api/v10/users/${discordId}`, {
-                    headers: {
-                        Authorization: `Bot ${config.discord.bot_token}`
-                    }
-                });
-                const discordUser = await discordUserResponse.json();
-
-                targetUser = await User.create({
-                    discordId: discordUser.id,
-                    username: discordUser.username,
-                    avatar: discordUser.avatar,
-                    isStaff: discordUser.id === config.discord.owner_id
-                });
-            }
-        }
-
-        const licenses = [];
-        for (let i = 0; i < quantity; i++) {
-            const key = generateUniqueKey();
-            const expiresAt = new Date();
-            expiresAt.setDate(expiresAt.getDate() + Number(duration));
-           
-            const license = new License({
-                key,
-                user: targetUser?._id || null,
-                product,
-                expiresAt,
-                isActive: true,
-                createdAt: new Date()
-            });
-           
-            await license.save();
-            licenses.push(license);
-        }
-       
-        res.json({ success: true, licenses });
-    } catch (error) {
-        console.error('License generation error:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-
-router.post('/licenses/:id/toggle', isStaff, async (req, res) => {
-    try {
-        const license = await License.findById(req.params.id);
-        license.isActive = !license.isActive;
-        await license.save();
-        res.json({ success: true });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to toggle license' });
-    }
-});
-
-router.delete('/licenses/:id', isStaff, async (req, res) => {
-    try {
-        await License.findByIdAndDelete(req.params.id);
-        res.json({ success: true });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to delete license' });
-    }
-});
-router.post('/licenses/:id/reset-hwid', async (req, res) => {
-    try {
-        const license = await License.findById(req.params.id);
-        
-        // Staff can reset without restrictions
-        if (req.user.isStaff) {
-            license.hwid = null;
-            license.lastHwidReset = new Date();
-            await license.save();
-            return res.json({ success: true });
-        }
-
-        // Regular user checks
-        if (license.user.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ error: 'Unauthorized' });
-        }
-        
-        // Cooldown check only for regular users
-        const cooldownPeriod = 48 * 60 * 60 * 1000;
-        if (license.lastHwidReset && (Date.now() - new Date(license.lastHwidReset).getTime()) < cooldownPeriod) {
-            return res.status(429).json({ error: 'HWID reset is on cooldown' });
-        }
-
-        license.hwid = null;
-        license.lastHwidReset = new Date();
-        await license.save();
-        
-        res.json({ success: true });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to reset HWID' });
-    }
-});
   module.exports = router;

@@ -1,4 +1,4 @@
-async function toggleBan(userId) {
+async function toggleBan(userId, element) {
     try {
         const response = await fetch(`/staff/users/${userId}/toggle-ban`, {
             method: 'POST',
@@ -6,10 +6,27 @@ async function toggleBan(userId) {
         });
         const data = await response.json();
         if (data.success) {
-            location.reload();
+            const button = element;
+            const icon = button.querySelector('i');
+            const currentStatus = button.classList.contains('danger');
+            
+            // Toggle button appearance
+            button.classList.toggle('danger');
+            button.classList.toggle('success');
+            
+            // Update icon and text
+            icon.classList.toggle('fa-ban');
+            icon.classList.toggle('fa-unlock');
+            button.innerHTML = currentStatus ? 
+                '<i class="fas fa-unlock"></i> Unban User' : 
+                '<i class="fas fa-ban"></i> Ban User';
+                
+            createNotification('User ban status updated successfully', 'success');
+            setTimeout(() => location.reload(), 1500);
         }
     } catch (error) {
         console.error('Error toggling ban:', error);
+        createNotification('Error updating ban status', 'error');
     }
 }
 
@@ -21,37 +38,39 @@ async function toggleStaff(userId) {
         });
         const data = await response.json();
         if (data.success) {
-            location.reload();
+            createNotification('Staff status updated successfully', 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            createNotification('Failed to update staff status', 'error');
         }
     } catch (error) {
         console.error('Error toggling staff status:', error);
+        createNotification('Error updating staff status', 'error');
     }
 }
 
 async function toggleLicense(licenseId) {
-    try {
-        const response = await fetch(`/staff/licenses/${licenseId}/toggle`, {
-            method: 'POST'
+    fetch(`/staff/licenses/${licenseId}/toggle`, { method: 'POST' })
+        .then(response => {
+            if (response.ok) {
+                createNotification('License status updated', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                createNotification('Failed to update license', 'error');
+            }
         });
-        if (response.ok) {
-            location.reload();
-        }
-    } catch (error) {
-        console.error('Error toggling license:', error);
-    }
 }
 
 async function deleteLicense(licenseId) {
-    try {
-        const response = await fetch(`/staff/licenses/${licenseId}`, {
-            method: 'DELETE'
+    fetch(`/staff/licenses/${licenseId}`, { method: 'DELETE' })
+        .then(response => {
+            if (response.ok) {
+                createNotification('License deleted successfully', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                createNotification('Failed to delete license', 'error');
+            }
         });
-        if (response.ok) {
-            location.reload();
-        }
-    } catch (error) {
-        console.error('Error deleting license:', error);
-    }
 }
 
 async function resetHWID(licenseId) {
@@ -60,11 +79,11 @@ async function resetHWID(licenseId) {
             method: 'POST'
         });
         if (response.ok) {
-            showToast('HWID reset successfully');
+            createNotification('HWID reset successfully', 'success');
             setTimeout(() => location.reload(), 1500);
         }
     } catch (error) {
-        showToast('Failed to reset HWID');
+        createNotification('Failed to reset HWID', 'error');
     }
 }
 
@@ -102,10 +121,12 @@ async function addProduct(event) {
         });
         const data = await response.json();
         if (data.success) {
-            location.reload();
+            createNotification('Product added successfully', 'success');
+            setTimeout(() => location.reload(), 1500);
         }
     } catch (error) {
         console.error('Error adding product:', error);
+        createNotification('Failed to add product', 'error');
     }
 }
 
@@ -115,10 +136,12 @@ async function deleteProduct(productId) {
             method: 'DELETE'
         });
         if (response.ok) {
-            location.reload();
+            createNotification('Product deleted successfully', 'success');
+            setTimeout(() => location.reload(), 1500);
         }
     } catch (error) {
         console.error('Error deleting product:', error);
+        createNotification('Failed to delete product', 'error');
     }
 }
 
@@ -142,13 +165,14 @@ async function generateLicense(event) {
         });
         const data = await response.json();
         if (data.success) {
-            location.reload();
+            createNotification('License generated successfully', 'success');
+            setTimeout(() => location.reload(), 1500);
         }
     } catch (error) {
         console.error('Error generating license:', error);
+        createNotification('Failed to generate license', 'error');
     }
 }
-
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     const productForm = document.getElementById('productForm');
@@ -196,3 +220,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // Activate clicked button
     if (event.currentTarget) event.currentTarget.classList.add('active');
 }
+// Notification system
+function createNotification(message, type = 'success') {
+    const notificationStack = document.getElementById('notificationStack');
+    
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    notificationStack.appendChild(notification);
+    
+    // Fade out and remove after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Copy text function with notification
+function copyText(text) {
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            createNotification('Copied to clipboard!', 'success');
+        })
+        .catch(err => {
+            createNotification('Failed to copy text', 'error');
+        });
+}
+

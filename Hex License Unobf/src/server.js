@@ -8,13 +8,19 @@ const fs = require("fs");
 const figlet = require("figlet");
 const path = require("path");
 const axios = require("axios");
+const indexRoutes = require('./routes/index');
+const errorRoutes = require('./routes/error');
+const staffRoutes = require('./routes/staff');
+const apiRoutes = require('./routes/api');
+const authRoutes = require('./routes/auth');
+const dashboardRoutes = require('./routes/dashboard');
 
 const configPath = path.join(__dirname, "../config/config.yml");
 const config = yaml.parse(fs.readFileSync(configPath, "utf8"));
 const app = express();
 
 const PRODUCT_ID = "Hex License";
-const currentVersion = "3.0.0";
+const currentVersion = "4.0.0";
 
 function displayWelcome() {
   console.clear();
@@ -93,13 +99,15 @@ function startServer() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
+  
 
   // Routes
-  app.use("/", require("./routes/index"));
-  app.use("/dashboard", require("./routes/dashboard"));
-  app.use("/staff", require("./routes/staff"));
-  app.use("/auth", require("./routes/auth"));
-  app.use("/api", require("./routes/api"));
+  app.use('/', indexRoutes);
+  app.use('/', errorRoutes);
+  app.use('/staff', staffRoutes);
+  app.use('/api', apiRoutes);
+  app.use('/auth', authRoutes);
+  app.use('/dashboard', dashboardRoutes);
 
   // Discord Bot Setup
   const { Client, GatewayIntentBits } = require("discord.js");

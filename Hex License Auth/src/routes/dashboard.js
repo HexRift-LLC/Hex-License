@@ -9,12 +9,20 @@ const configPath = path.join(__dirname, '../../config/config.yml');
 const config = yaml.parse(fs.readFileSync(configPath, 'utf8'));
 
 const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) return next();
-    res.redirect('/auth/discord');
+    if (!req.isAuthenticated()) {
+        return res.redirect('/auth/discord');
+    }
+    
+    if (req.user.isBanned) {
+        return res.redirect('/banned');
+    }
+    
+    next();
 };
 
 router.get('/', isAuthenticated, async (req, res) => {
     const licenses = await License.find({ user: req.user._id });
+
     res.locals.getTimeUntilReset = function(lastReset) {
         const resetTime = new Date(lastReset);
         const nextReset = new Date(resetTime.getTime() + (2 * 24 * 60 * 60 * 1000));
@@ -26,12 +34,14 @@ router.get('/', isAuthenticated, async (req, res) => {
         
         return `in ${hours}h ${minutes}m`;
     };
-    res.render('dashboard', { 
-        user: req.user, 
+
+    res.render('dashboard', {
+        user: req.user,
         licenses,
-        config: config 
+        config: config
     });
 });
+
 
 
 module.exports = router;

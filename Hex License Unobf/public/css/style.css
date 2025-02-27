@@ -1141,15 +1141,14 @@ select {
 /* Responsive License Cards Grid */
 .license-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 20px;
   padding: 20px;
-  justify-content: center; /* Centers when less than 3 cards */
-  align-items: center;
-  place-items: center; /* Ensures single or two cards are centered */
+  justify-content: center;
+  align-items: start;
   width: 100%;
-  max-width: 1200px; /* Prevents excessive stretching */
-  margin: 0 auto; /* Centers the entire grid */
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 /* License Card Body */
@@ -1689,6 +1688,9 @@ select {
 }
 /* User Management Cards */
 .user-card {
+  width: 100%;
+  min-width: 350px;
+  margin-bottom: 20px;
   background: var(--bg-secondary);
   border-radius: 20px;
   overflow: hidden;
@@ -1755,12 +1757,30 @@ select {
 }
 
 .user-actions {
-  display: flex;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
   padding: 1.5rem;
   background: var(--bg-tertiary);
   border-top: 1px solid var(--border);
+  width: 100%;
+}
+
+.user-actions button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+}
+.user-actions .action-button,
+.user-actions .copy-btn {
+  min-height: 42px;
+  border-radius: 12px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Status Badges for Users */
@@ -3646,3 +3666,105 @@ select {
   100% { transform: scale(0.95); opacity: 0.5; }
 }
 
+/* Error Page Specific Styles */
+.error-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: 
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 40%),
+    radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.1), transparent 40%);
+}
+
+.error-card {
+  width: 100%;
+  max-width: 500px;
+  background: var(--bg-secondary);
+  border-radius: 24px;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.error-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.error-card h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.error-message {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.error-actions .action-btn {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  border: none;
+}
+
+.error-actions .action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.error-actions .discord-btn {
+  background: #5865F2;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.error-actions .discord-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.2);
+}
