@@ -20,6 +20,12 @@ license:
   key_length: 24
   hwid_enabled: true
 
+analytics:
+  google:
+    enabled: true
+    tracking_id: "G-XXXXXXXXXX"
+
+
 footer:
   copyright: "Hex License"
   company: "Hexarion"

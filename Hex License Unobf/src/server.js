@@ -100,7 +100,7 @@ function startServer() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  
+  app.locals.config = config;
 
   // Routes
   app.use('/', indexRoutes);

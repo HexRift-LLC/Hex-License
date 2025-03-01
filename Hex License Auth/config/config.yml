@@ -19,6 +19,11 @@ discord:
   botIconUrl: "https://hexarion.net/Hex-L-T.png"
   embedColor: "#6366f1"
 
+analytics:
+  google:
+    enabled: true
+    tracking_id: "G-XXXXXXXXXX"
+
 license:
   key_length: 24
   hwid_enabled: true
