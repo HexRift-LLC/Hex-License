@@ -47,14 +47,23 @@
                     <span class="stat-number"><%= licenses.length %></span>
                     <span class="stat-label">Total Licenses</span>
                 </div>
+                
                 <div class="stat-box interactive-card">
                     <div class="stat-icon">
                         <i class="fas fa-check-circle"></i>
                     </div>
-                    <span class="stat-number"><%= licenses.filter(l => l.isActive).length %></span>
+                    <span class="stat-number"><%= licenses.filter(l => l.hwid).length %></span>
                     <span class="stat-label">Active Licenses</span>
                 </div>
-            </div>
+            
+                <div class="stat-box interactive-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <span class="stat-number"><%= licenses.filter(l => !l.hwid).length %></span>
+                    <span class="stat-label">Inactive Licenses</span>
+                </div>
+            </div>            
         </div>
 
                 <!-- Key Generation Section -->

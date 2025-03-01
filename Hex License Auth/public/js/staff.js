@@ -103,8 +103,13 @@ function toggleMenu() {
 }
 
 function copyKey(key) {
-    navigator.clipboard.writeText(key);
-    showToast('License key copied!');
+    navigator.clipboard.writeText(key)
+    .then(() => {
+        createNotification('Key copied to clipboard!', 'success');
+    })
+    .catch(err => {
+        createNotification('Failed to copy key', 'error');
+    });
 }
 
 // Product Management
@@ -238,16 +243,5 @@ function createNotification(message, type = 'success') {
         notification.style.opacity = '0';
         setTimeout(() => notification.remove(), 300);
     }, 3000);
-}
-
-// Copy text function with notification
-function copyText(text) {
-    navigator.clipboard.writeText(text)
-        .then(() => {
-            createNotification('Copied to clipboard!', 'success');
-        })
-        .catch(err => {
-            createNotification('Failed to copy text', 'error');
-        });
 }
 

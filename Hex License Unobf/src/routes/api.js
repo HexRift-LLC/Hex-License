@@ -22,6 +22,34 @@ const isStaff = (req, res, next) => {
     return res.status(403).json({ error: 'Unauthorized' });
 };
 
+// Add this route after your existing /verify endpoint
+router.post('/licenses/:id/reset-hwid', async (req, res) => {
+    try {
+        const license = await License.findById(req.params.id).populate('user');
+        const username = license.user ? license.user.username : 'No Owner';
+
+        if (!license) {
+            return res.status(404).json({ error: 'License not found' });
+        }
+
+        // Reset the HWID
+        license.hwid = null;
+        license.lastHwidReset = new Date();
+        await license.save();
+
+        sendLog('hwid_reset', {
+            key: license.key,
+            product: license.product,
+            username: username
+        });
+
+        return res.json({ success: true });
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+});
+
+
 router.post('/verify', async (req, res) => {
     const { key, hwid, product } = req.body;
     const license = await License.findOne({ key }).populate('user');

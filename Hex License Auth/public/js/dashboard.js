@@ -1,6 +1,30 @@
+function createNotification(message, type = 'success') {
+    const notificationStack = document.getElementById('notificationStack');
+    
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    notificationStack.appendChild(notification);
+    
+    // Fade out and remove after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
 function copyKey(key) {
-    navigator.clipboard.writeText(key);
-    showToast('License key copied!');
+    navigator.clipboard.writeText(key)
+        .then(() => {
+            createNotification('Key copied to clipboard!', 'success');
+        })
+        .catch(err => {
+            createNotification('Failed to copy key', 'error');
+        });
 }
 
 async function resetHWID(licenseId) {
@@ -10,26 +34,19 @@ async function resetHWID(licenseId) {
         });
 
         if (response.ok) {
-            showToast('HWID reset successfully.');
+            createNotification('HWID reset successfully', 'success');
             setTimeout(() => {
                 window.location.reload();
-            }, 2000); // Waits 2 seconds before reload
+            }, 2000);
         }
     } catch (error) {
-        showToast('Failed to reset HWID');
+        createNotification('Failed to reset HWID', 'error');
     }
 }
 
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
 function toggleMenu() {
-const burger = document.querySelector('.burger');
-const navLinks = document.querySelector('.nav-links');
-burger.classList.toggle('active');
-navLinks.classList.toggle('active');
+    const burger = document.querySelector('.burger');
+    const navLinks = document.querySelector('.nav-links');
+    burger.classList.toggle('active');
+    navLinks.classList.toggle('active');
 }

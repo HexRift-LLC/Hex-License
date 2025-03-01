@@ -7,9 +7,16 @@ const yaml = require('yaml');
 const fs = require('fs');
 const path = require('path');
 const { sendLog } = require('../utils/discord');
+const crypto = require('crypto');
 
 const configPath = path.join(__dirname, '../../config/config.yml');
 const config = yaml.parse(fs.readFileSync(configPath, 'utf8'));
+
+function generateUniqueKey() {
+    const key = `HEX-${Math.random().toString(36).substring(2, 15).toUpperCase()}-${Math.random().toString(36).substring(2, 15).toUpperCase()}`;
+    return key;
+}
+
 
 // Middleware to check staff status
 const isStaff = (req, res, next) => {
@@ -94,57 +101,76 @@ router.delete('/products/:id', async (req, res) => {
     }
 });
 
-// License management endpoints
 router.post('/licenses/generate', async (req, res) => {
     try {
         const { duration, quantity, product, userId, discordId } = req.body;
-        
         const licenses = [];
-        for (let i = 0; i < quantity; i++) {
-            const key = `HEX-${Math.random().toString(36).substring(2, 15).toUpperCase()}-${Math.random().toString(36).substring(2, 15).toUpperCase()}`;
-            
-            const expiresAt = new Date();
-            expiresAt.setDate(expiresAt.getDate() + parseInt(duration));
 
+        for (let i = 0; i < quantity; i++) {
             const license = new License({
-                key,
-                product,
-                expiresAt,
-                isActive: true,
+                key: generateUniqueKey(),
+                duration: duration,
+                product: product,
                 user: userId || null,
                 discordId: discordId || null,
-                createdAt: new Date(),
-                hwid: null
+                expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000)
             });
 
             await license.save();
             licenses.push(license);
-        }
 
-        const existingProduct = await Product.findOne({ name: product });
-        if (!existingProduct) {
-            const newProduct = new Product({ name: product });
-            await newProduct.save();
-        }
-
-        licenses.forEach(license => {
-            sendLog('license_created', {
-                username: req.user.username,
-                product: license.product,
-                key: license.key
+            licenses.forEach(license => {
+                sendLog('license_created', {
+                    username: req.user.username,
+                    product: license.product,
+                    key: license.key
+                });
             });
-        });
+        }
 
-        res.json({
-            success: true,
-            licenses,
-            message: `Successfully generated ${quantity} license(s)`
-        });
+        res.json({ success: true, licenses });
     } catch (error) {
-        console.error('License generation error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
+async function generateLicense(event) {
+    event.preventDefault();
+    const form = event.target;
+    
+    // Check if either product dropdown or new product input is filled
+    const productSelect = form.product.value;
+    const newProduct = form.newProduct.value;
+    
+    if (!productSelect && !newProduct) {
+        createNotification('Please select or enter a product', 'error');
+        return;
+    }
+
+    const formData = {
+        duration: form.duration.value,
+        quantity: form.quantity.value,
+        product: productSelect || newProduct,
+        userId: form.userId.value,
+        discordId: form.discordId.value
+    };
+
+    try {
+        const response = await fetch('/staff/licenses/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (data.success) {
+            createNotification('License generated successfully', 'success');
+            setTimeout(() => location.reload(), 1500);
+        }
+    } catch (error) {
+        createNotification('Failed to generate license', 'error');
+    }
+}
+
+
 router.post('/licenses/:id/reset-hwid', async (req, res) => {
     try {
         const license = await License.findById(req.params.id);

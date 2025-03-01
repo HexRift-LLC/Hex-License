@@ -14,6 +14,7 @@ const staffRoutes = require('./routes/staff');
 const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
+const { version } = require('../package.json');
 const { Auth } = require('./API/auth.js');
 
 const configPath = path.join(__dirname, "../config/config.yml");
@@ -21,7 +22,7 @@ const config = yaml.parse(fs.readFileSync(configPath, "utf8"));
 const app = express();
 
 const PRODUCT_ID = "Hex License";
-const currentVersion = "4.0.0";
+const currentVersion = version;
 
 function displayWelcome() {
   console.clear();
