@@ -6,6 +6,7 @@ const path = require('path');
 const crypto = require('crypto');
 const os = require('os');
 
+
 class LicenseChecker {
     #currentVersion = '4.0.0';
     #baseUrl = 'https://dash.hexarion.net/api';

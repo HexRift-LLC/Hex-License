@@ -49,24 +49,23 @@ router.post('/licenses/:id/reset-hwid', async (req, res) => {
     }
 });
 
-
 router.post('/verify', async (req, res) => {
     const { key, hwid, product } = req.body;
-    const license = await License.findOne({ key }).populate('user');
-    const username = license.user ? license.user.username : 'No Owner';
     
     try {
-        const license = await License.findOne({ key });
+        const license = await License.findOne({ key }).populate('user');
 
         if (!license) {
             sendLog('license_verify_failed', {
                 key: key,
                 reason: 'License not found',
                 product: product,
-                username: username
+                username: 'No Owner'
             });
             return res.status(404).json({ error: 'License not found' });
         }
+
+        const username = license.user ? license.user.username : 'No Owner';
 
         if (license.product !== product) {
             sendLog('license_verify_failed', {
