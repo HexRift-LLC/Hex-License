@@ -163,6 +163,7 @@ function startServer() {
 async function initialize() {
   displayWelcome();
   await checkVersion();
-  Auth(startServer);
+  await Auth();
+  startServer();
 }
 initialize();
