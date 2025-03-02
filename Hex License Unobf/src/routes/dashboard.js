@@ -4,6 +4,7 @@ const License = require('../models/License');
 const yaml = require('yaml');
 const fs = require('fs');
 const path = require('path');
+const { version } = require('../../package.json');
 
 const configPath = path.join(__dirname, '../../config/config.yml');
 const config = yaml.parse(fs.readFileSync(configPath, 'utf8'));
@@ -38,7 +39,8 @@ router.get('/', isAuthenticated, async (req, res) => {
     res.render('dashboard', {
         user: req.user,
         licenses,
-        config: config
+        config: config,
+        version: version,
     });
 });
 

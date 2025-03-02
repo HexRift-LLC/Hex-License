@@ -14,8 +14,8 @@ discord:
   client_secret: "Your CLIENT SECRET HERE"
   callback_url: "http://localhost:3000/auth/discord/callback"
   owner_id: "Your Discord ID"
-  guild_id: "1323896546538033233"
-  logChannelId: "1323896546538033233"
+  guild_id: "Your Guild ID"
+  logChannelId: "Your Log Channel ID"
   botIconUrl: "https://hexarion.net/Hex-L-T.png"
   embedColor: "#6366f1"
 
@@ -30,4 +30,3 @@ license:
 
 footer:
   copyright: "Hex License"
-  company: "Hexarion"

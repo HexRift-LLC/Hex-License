@@ -214,10 +214,10 @@
                                     <i class="fas <%= user.isStaff ? 'fa-user-minus' : 'fa-user-plus' %>"></i>
                                     <%= user.isStaff ? 'Remove Staff' : 'Make Staff' %>
                                 </button>
-                                <button class="copy-btn" onclick="copyText('<%= user.username %>')">
+                                <button class="copy-btn" onclick="copyKey('<%= user.username %>')">
                                     <i class="fas fa-copy"></i> Copy User
                                 </button>
-                                <button class="copy-btn" onclick="copyText('<%= user.discordId %>')">
+                                <button class="copy-btn" onclick="copyKey('<%= user.discordId %>')">
                                     <i class="fas fa-copy"></i> Copy ID
                                 </button>
                             </div>
@@ -230,7 +230,8 @@
         </div>
         <footer class="footer">
             <div class="footer-content">
-                <p class="copyright">© 2023 - <%= new Date().getFullYear() %> <%= config.footer.copyright %> by <%= config.footer.company %>.</p>
+                <div class="copyright">© 2023 - <%= new Date().getFullYear() %> <%= config.footer.copyright %></div>
+                <div class="version">v<%= version %></div>
             </div>
         </footer>
     </div>

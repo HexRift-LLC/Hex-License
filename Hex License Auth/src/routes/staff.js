@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { sendLog } = require('../utils/discord');
 const crypto = require('crypto');
+const { version } = require('../../package.json');
 
 const configPath = path.join(__dirname, '../../config/config.yml');
 const config = yaml.parse(fs.readFileSync(configPath, 'utf8'));
@@ -60,7 +61,8 @@ router.get('/', async (req, res) => {
             products,
             users: userStats,
             stats,
-            config: config
+            config: config,
+            version: version,
         });
     } catch (error) {
         console.error('Staff page error:', error);

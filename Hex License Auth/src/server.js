@@ -15,7 +15,7 @@ const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const { version } = require('../package.json');
-const { Auth } = require('./API/auth.js');
+const MongoStore = require('connect-mongo');
 
 const configPath = path.join(__dirname, "../config/config.yml");
 const config = yaml.parse(fs.readFileSync(configPath, "utf8"));
@@ -97,6 +97,14 @@ function startServer() {
       secret: config.server.session_secret,
       resave: false,
       saveUninitialized: false,
+      store: MongoStore.create({
+        mongoUrl: config.mongodb.uri,
+        ttl: 14 * 24 * 60 * 60, // Session TTL in seconds (14 days)
+        autoRemove: 'native'
+      }),
+      cookie: {
+        maxAge: 14 * 24 * 60 * 60 * 1000 // Cookie duration in milliseconds (14 days)
+      }
     })
   );
   app.use(passport.initialize());
@@ -154,6 +162,6 @@ function startServer() {
 async function initialize() {
   displayWelcome();
   await checkVersion();
-  Auth(startServer);
+  startServer();
 }
 initialize();
