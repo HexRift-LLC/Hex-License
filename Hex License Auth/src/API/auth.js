@@ -8,7 +8,7 @@ const os = require('os');
 
 
 class LicenseChecker {
-    #baseUrl = 'https://dash.hexarion.net/api';
+    #baseUrl = 'https://api.hexarion.net/api';
     #hwid;
 
     constructor() {
@@ -32,7 +32,7 @@ class LicenseChecker {
 
     async validateLicense() {
         try {
-            const configPath = path.join(__dirname, '../config/config.yml');
+            const configPath = path.join(__dirname, '../../config/config.yml');
             const config = yaml.load(fs.readFileSync(configPath, 'utf8'));
             const key = config.auth.key;
     
