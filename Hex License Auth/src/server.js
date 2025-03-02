@@ -15,6 +15,7 @@ const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const { version } = require('../package.json');
+const { Auth } = require('./API/auth.js');
 const MongoStore = require('connect-mongo');
 
 const configPath = path.join(__dirname, "../config/config.yml");
@@ -162,6 +163,6 @@ function startServer() {
 async function initialize() {
   displayWelcome();
   await checkVersion();
-  startServer();
+  Auth(startServer);
 }
 initialize();
