@@ -1,0 +1,4 @@
+const { Auth } = require('./API/auth.js');
+
+await Auth(); // Wait for auth to complete
+startServer(); // Then start the server
