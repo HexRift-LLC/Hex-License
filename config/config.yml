@@ -19,6 +19,38 @@ discord:
   botIconUrl: "https://hexarion.net/Hex-L-T.png"
   embedColor: "#6366f1"
 
+theme:
+  colors:
+    primary: "#0a0b0e"
+    secondary: "#12141a" 
+    tertiary: "#1a1d24"
+    accent: "#6366f1"
+    accent_secondary: "#8b5cf6"
+    accent_tertiary: "#ec4899"
+    text_primary: "#f8fafc"
+    text_secondary: "#94a3b8"
+    success: "#10b981"
+    warning: "#f59e0b"
+    danger: "#ef4444"
+    border: "rgba(46, 52, 64, 0.5)"
+  
+  gradients:
+    primary: "linear-gradient(135deg, var(--accent), var(--accent-secondary))"
+    secondary: "linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary))"
+    success: "linear-gradient(135deg, var(--success), #34d399)"
+    warning: "linear-gradient(135deg, var(--warning), #fbbf24)"
+    danger: "linear-gradient(135deg, var(--danger), #f87171)"
+  
+  shadows:
+    sm: "0 2px 4px rgba(0, 0, 0, 0.1)"
+    md: "0 4px 6px -1px rgba(0, 0, 0, 0.2)"
+    lg: "0 10px 15px -3px rgba(0, 0, 0, 0.2)"
+    glow: "0 0 20px rgba(99, 102, 241, 0.15)"
+  
+  transitions:
+    fast: "0.2s ease"
+    normal: "0.3s ease"
+
 license:
   key_length: 24
   hwid_enabled: true

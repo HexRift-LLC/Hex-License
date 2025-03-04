@@ -118,7 +118,7 @@ const sendLog = (type, data) => {
         .setTitle("✅ License Verified")
         .setDescription("Successful license verification")
         .addFields([
-          { name: 'Owner', value: data.username, inline: false },
+          { name: "Owner", value: data.username, inline: false },
           { name: "Product", value: data.product, inline: false },
           { name: "License Key", value: `||${data.key}||`, inline: false },
           { name: "HWID", value: `||${data.hwid}||`, inline: false },
@@ -130,7 +130,7 @@ const sendLog = (type, data) => {
         .setTitle("❌ Verification Failed")
         .setDescription(`License verification failed: ${data.reason}`)
         .addFields([
-          { name: 'Owner', value: data.username, inline: false },
+          { name: "Owner", value: data.username, inline: false },
           { name: "Product", value: data.product, inline: false },
           { name: "License Key", value: `||${data.key}||`, inline: false },
         ]);
@@ -141,11 +141,43 @@ const sendLog = (type, data) => {
         .setTitle("🔒 HWID Bound")
         .setDescription("License bound to new HWID")
         .addFields([
-          { name: 'Owner', value: data.username, inline: false },
+          { name: "Owner", value: data.username, inline: false },
           { name: "Product", value: data.product, inline: false },
           { name: "License Key", value: `||${data.key}||`, inline: false },
           { name: "HWID", value: `||${data.hwid}||`, inline: false },
         ]);
+      break;
+    case "user_updated":
+      embed
+        .setTitle("👤 User Profile Updated")
+        .setDescription(`User information has been synchronized`)
+        .addFields([
+          { name: "User ID", value: data.discordId, inline: false },
+          { name: "Old Username", value: data.oldUsername, inline: false },
+          { name: "New Username", value: data.newUsername, inline: false },
+          {
+            name: "Avatar Updated",
+            value: data.avatarChanged ? "Yes" : "No",
+            inline: false,
+          },
+        ]);
+      break;
+    // Add this new case in the switch statement
+    case "user_check_status":
+      embed
+        .setTitle("🔍 User Sync Status")
+        .setDescription(
+          data.hasUpdates
+            ? "Found updates for the following users:"
+            : "No updates found for any users"
+        )
+        .addFields(
+          data.users.map((user) => ({
+            name: user.username,
+            value: user.hasUpdate ? "✅ Updated" : "✨ No changes needed",
+            inline: false,
+          }))
+        );
       break;
   }
 

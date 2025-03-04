@@ -42,7 +42,13 @@ passport.use(new DiscordStrategy({
                 isStaff: isOwner
             });
         } else {
-            // Update staff status if owner ID matches
+            // Update user information if changed
+            if (user.username !== profile.username || user.avatar !== profile.avatar) {
+                user.username = profile.username;
+                user.avatar = profile.avatar;
+                await user.save();
+            }
+            // Keep staff status check
             if (isOwner && !user.isStaff) {
                 user.isStaff = true;
                 await user.save();
@@ -53,8 +59,7 @@ passport.use(new DiscordStrategy({
     } catch (err) {
         return done(err, null);
     }
-}));
-router.get('/discord', passport.authenticate('discord'));
+}));router.get('/discord', passport.authenticate('discord'));
 
 router.get('/discord/callback', 
     passport.authenticate('discord', {

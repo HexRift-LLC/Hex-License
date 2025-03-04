@@ -15,9 +15,10 @@ const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
 const { version } = require('../package.json');
-const { Auth } = require('./API/auth.js');
 const MongoStore = require('connect-mongo');
-
+const fetch = require('node-fetch');
+const { sendLog } = require('./utils/discord');
+const User = require('./models/User');
 const configPath = path.join(__dirname, "../config/config.yml");
 const config = yaml.parse(fs.readFileSync(configPath, "utf8"));
 const app = express();
@@ -77,6 +78,23 @@ async function checkVersion() {
   }
 }
 
+function watchConfig() {
+  const configPath = path.join(__dirname, '..', 'config', 'config.yml');
+  
+  fs.watch(configPath, (eventType, filename) => {
+      if (eventType === 'change') {
+          try {
+              const newConfig = yaml.parse(fs.readFileSync(configPath, 'utf8'));
+              Object.assign(config, newConfig);
+              console.log(chalk.green('[System]'), 'Configuration reloaded successfully');
+          } catch (error) {
+              console.log(chalk.red('[System]'), 'Error reloading configuration:', error);
+          }
+      }
+  });
+}
+
+
 function startServer() {
   // Database connection
   mongoose
@@ -134,6 +152,7 @@ function startServer() {
     console.error(chalk.red("[Bot]"), "Failed to login to Discord:", err);
   });
 
+  
   // Protected route middleware
   const protectStaffRoutes = (req, res, next) => {
     if (!req.isAuthenticated()) {
@@ -146,6 +165,63 @@ function startServer() {
     }
     next();
   };
+    async function updateDiscordUsers() {
+        try {
+            const users = await User.find({});
+            let hasUpdates = false;
+            const userStatuses = [];
+
+            for (const user of users) {
+                const response = await fetch(`https://discord.com/api/users/${user.discordId}`, {
+                    headers: {
+                        Authorization: `Bot ${config.discord.bot_token}`
+                    }
+                });
+
+                const discordUser = await response.json();
+                const needsUpdate = discordUser.username !== user.username || discordUser.avatar !== user.avatar;
+            
+                userStatuses.push({
+                    username: user.username,
+                    hasUpdate: needsUpdate
+                });
+
+                if (needsUpdate) {
+                    hasUpdates = true;
+                    await User.findOneAndUpdate(
+                        { discordId: user.discordId },
+                        {
+                            username: discordUser.username,
+                            avatar: discordUser.avatar
+                        }
+                    );
+
+                    sendLog("user_updated", {
+                        discordId: user.discordId,
+                        oldUsername: user.username,
+                        newUsername: discordUser.username,
+                        avatarChanged: user.avatar !== discordUser.avatar
+                    });
+                }
+            }
+
+            // Send periodic status report
+            sendLog("user_check_status", {
+                hasUpdates,
+                users: userStatuses
+            });
+
+        } catch (error) {
+            console.error(chalk.red("[System]"), "Error in background user update:", error);
+        }
+    }
+
+    
+  // This will run immediately when server starts
+  updateDiscordUsers();
+
+  // This will continue to run every 5 minutes after
+  setInterval(updateDiscordUsers, 5 * 60 * 1000);
 
   // Apply protection to staff routes
   app.use('/staff/*', protectStaffRoutes);
@@ -163,7 +239,7 @@ function startServer() {
 async function initialize() {
   displayWelcome();
   await checkVersion();
-  await Auth();
+  watchConfig();
   startServer();
 }
 initialize();
