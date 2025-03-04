@@ -1557,7 +1557,6 @@ body::-webkit-scrollbar {
 
 /* Footer */
 .footer {
-  background: rgb(18 20 26 / 95%);
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--border);
   padding: 1.25rem 2rem;
