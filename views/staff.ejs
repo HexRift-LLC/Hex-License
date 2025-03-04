@@ -14,27 +14,33 @@
 <body class="dark-theme">
     <div id="particles-js" class="particle-background"></div>
     <nav class="navbar">
-        <div class="logo-container">
+        <div class="nav-content">
             <div class="logo">Hex License</div>
-        </div>
-        <div class="burger" onclick="toggleMenu()">
-            <span class="burger-line"></span>
-            <span class="burger-line"></span>
-            <span class="burger-line"></span>
-        </div>
-        <div class="nav-links">
-            <a href="/dashboard">
-                <i class="fas fa-home"></i>
-                Dashboard
-            </a>
-            <a href="/staff" class="active">
-                <i class="fas fa-shield-alt"></i>
-                Staff Panel
-            </a>
-            <a href="/auth/logout" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-                Logout
-            </a>
+            
+            <div class="burger" onclick="toggleMenu()">
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+            </div>
+    
+            <div class="nav-menu">
+                <div class="nav-links">
+                    <a href="/dashboard">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <% if (user && user.isStaff) { %>
+                        <a href="/staff" class="active">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Staff Panel</span>
+                        </a>
+                    <% } %>
+                    <a href="/auth/logout" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -60,9 +66,14 @@
                 <h2 style="text-align: center;">Products Management</h2>
                 <form id="productForm" class="staff-form">
                     <div class="form-control">
-                        <label>Product Name</label>
                         <div class="input-group">
-                            <input type="text" name="productName" required placeholder="Enter product name">
+                            <label for="productName">Product Name</label>
+                            <input type="text" 
+                                   id="productName" 
+                                   name="productName" 
+                                   class="styled-input"
+                                   placeholder="Enter product name"
+                                   required>
                         </div>
                     </div>
                     <button type="submit" class="action-button">Add Product</button>
@@ -166,11 +177,12 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="license-actions">
-                                <button onclick="toggleLicense('<%= license._id %>')" class="toggle-btn">
-                                    <i class="fas fa-power-off"></i> 
-                                    <%= license.isActive ? 'Deactivate Key' : 'Activate Key' %>
-                                </button>
+                            <div class="user-actions">
+                                <button onclick="toggleLicense('<%= license._id %>', this)" 
+                                    class="toggle-btn <%= license.isActive ? 'active' : 'inactive' %>">
+                                <i class="fas fa-power-off"></i>
+                                <%= license.isActive ? 'Deactivate Key' : 'Activate Key' %>
+                            </button>
                                 <button onclick="resetHWID('<%= license._id %>')" class="reset-hwid-btn">
                                     <i class="fas fa-redo"></i> Reset HWID
                                 </button>
@@ -212,10 +224,11 @@
                                     <i class="fas <%= user.isBanned ? 'fa-unlock' : 'fa-ban' %>"></i>
                                     <%= user.isBanned ? 'Unban User' : 'Ban User' %>
                                 </button>
-                                <button onclick="toggleStaff('<%= user._id %>')" class="action-button">
-                                    <i class="fas <%= user.isStaff ? 'fa-user-minus' : 'fa-user-plus' %>"></i>
-                                    <%= user.isStaff ? 'Remove Staff' : 'Make Staff' %>
-                                </button>
+                                <button onclick="toggleStaff('<%= user._id %>', this)" 
+                                    class="action-button <%= user.isStaff ? 'staff-active' : 'staff-inactive' %>">
+                                <i class="fas <%= user.isStaff ? 'fa-user-minus' : 'fa-user-plus' %>"></i>
+                                <%= user.isStaff ? 'Remove Staff' : 'Make Staff' %>
+                            </button>
                                 <button class="copy-btn" onclick="copyKey('<%= user.username %>')">
                                     <i class="fas fa-copy"></i> Copy User
                                 </button>
@@ -228,7 +241,6 @@
                         <% }) %>
                 </div>
             </div>
-            
         </div>
         <footer class="footer">
             <div class="footer-content">

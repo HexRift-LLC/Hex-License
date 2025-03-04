@@ -30,14 +30,52 @@ async function toggleBan(userId, element) {
     }
 }
 
-async function toggleStaff(userId) {
+function toggleLicense(licenseId, button) {
+    // Your existing AJAX call
+    fetch('/toggle-license/' + licenseId, {
+        method: 'POST',
+        // ... your existing fetch options
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Toggle the button classes
+            button.classList.toggle('active');
+            button.classList.toggle('inactive');
+            
+            // Update the button text
+            const newStatus = button.classList.contains('active');
+            button.innerHTML = `
+                <i class="fas fa-power-off"></i>
+                ${newStatus ? 'Deactivate Key' : 'Activate Key'}
+            `;
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+async function toggleStaff(userId, button) {
     try {
         const response = await fetch(`/staff/users/${userId}/toggle-staff`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
+        
         const data = await response.json();
+        
         if (data.success) {
+            // Toggle the staff classes
+            const isCurrentlyStaff = button.classList.contains('staff-active');
+            button.classList.remove(isCurrentlyStaff ? 'staff-active' : 'staff-inactive');
+            button.classList.add(isCurrentlyStaff ? 'staff-inactive' : 'staff-active');
+            
+            // Update the button icon and text
+            const newIsStaff = !isCurrentlyStaff;
+            button.innerHTML = `
+                <i class="fas ${newIsStaff ? 'fa-user-minus' : 'fa-user-plus'}"></i>
+                ${newIsStaff ? 'Remove Staff' : 'Make Staff'}
+            `;
+            
             createNotification('Staff status updated successfully', 'success');
             setTimeout(() => location.reload(), 1500);
         } else {
@@ -48,6 +86,7 @@ async function toggleStaff(userId) {
         createNotification('Error updating staff status', 'error');
     }
 }
+
 
 async function toggleLicense(licenseId) {
     fetch(`/staff/licenses/${licenseId}/toggle`, { method: 'POST' })

@@ -12,31 +12,36 @@
 <body class="dark-theme">
     <div id="particles-js" class="particle-background"></div>
     <nav class="navbar">
-        <div class="logo-container">
+        <div class="nav-content">
             <div class="logo">Hex License</div>
-        </div>
-        <div class="burger" onclick="toggleMenu()">
-            <span class="burger-line"></span>
-            <span class="burger-line"></span>
-            <span class="burger-line"></span>
-        </div>
-        <div class="nav-links">
-            <a href="/dashboard" class="active">
-                <i class="fas fa-home"></i>
-                Dashboard
-            </a>
-            <% if (user && user.isStaff) { %>
-                <a href="/staff">
-                    <i class="fas fa-shield-alt"></i>
-                    Staff Panel
-                </a>
-            <% } %>
-            <a href="/auth/logout" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-                Logout
-            </a>
+            
+            <div class="burger" onclick="toggleMenu()">
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+            </div>
+    
+            <div class="nav-menu">
+                <div class="nav-links">
+                    <a href="/dashboard" class="active">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <% if (user && user.isStaff) { %>
+                        <a href="/staff">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Staff Panel</span>
+                        </a>
+                    <% } %>
+                    <a href="/auth/logout" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
+    
 
     <div class="container">
         <div class="dashboard-header fade-scale">
@@ -103,30 +108,30 @@
                                             <span class="info-value"><%= license.createdAt.toLocaleDateString() %></span>
                                         </div>
                                         <div class="info-item">
-                                            <button onclick="resetHWID('<%= license._id %>')" 
-                                                    class="reset-hwid-btn action-button"
-                                                    <%= license.lastHwidReset && (new Date() - new Date(license.lastHwidReset)) < (2 * 24 * 60 * 60 * 1000) ? 'disabled' : '' %>>
-                                                Reset HWID
-                                                <% if (license.lastHwidReset) { %>
-                                                    <span class="reset-countdown">
-                                                        (Available <%= getTimeUntilReset(license.lastHwidReset) %>)
-                                                    </span>
-                                                <% } %>
-                                            </button>
+                                            <% if (license.lastHwidReset && (new Date() - new Date(license.lastHwidReset)) < (24 * 60 * 60 * 1000)) { %>
+                                                <div class="reset-countdown">
+                                                    Available in <%= getTimeUntilReset(license.lastHwidReset) %>
+                                                </div>
+                                            <% } else { %>
+                                                <button onclick="resetHWID('<%= license._id %>')" class="reset-hwid-btn action-button">
+                                                    Reset HWID
+                                                </button>
+                                            <% } %>
                                         </div>
+                                        
                                     </div>
                                 </div>
                             </div>
                         <% }) %>
                     </div>
                 </div>
+                <footer class="footer">
+                    <div class="footer-content">
+                        <div class="copyright">© 2023 - <%= new Date().getFullYear() %> <%= config.footer.copyright %> </div>
+                        <div class="version"> v<%= version %></div>
+                    </div>
+                </footer>
             </div>
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="copyright">© 2023 - <%= new Date().getFullYear() %> <%= config.footer.copyright %></div>
-            <div class="version">v<%= version %></div>
-        </div>
-    </footer>
 
     <div class="notification-stack" id="notificationStack"></div>
     <% if (config.analytics.google.enabled) { %>

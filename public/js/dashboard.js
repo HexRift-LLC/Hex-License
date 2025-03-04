@@ -44,6 +44,44 @@ async function resetHWID(licenseId) {
     }
 }
 
+function updateHwidResetButton(button, lastResetTime) {
+    const cooldownPeriod = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const now = new Date();
+    const resetTime = new Date(lastResetTime);
+    const timeLeft = cooldownPeriod - (now - resetTime);
+
+    if (timeLeft > 0) {
+        // Hide button, show countdown
+        button.style.display = 'none';
+        const hours = Math.floor(timeLeft / (60 * 60 * 1000));
+        const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
+        
+        const countdownText = `Available in ${hours}h ${minutes}m`;
+        const countdownElement = document.createElement('div');
+        countdownElement.className = 'reset-countdown';
+        countdownElement.textContent = countdownText;
+        
+        button.parentNode.insertBefore(countdownElement, button);
+    } else {
+        // Show only the reset button
+        button.style.display = 'flex';
+        const existingCountdown = button.parentNode.querySelector('.reset-countdown');
+        if (existingCountdown) {
+            existingCountdown.remove();
+        }
+    }
+}
+
+
+// Call this for each button on page load
+document.querySelectorAll('.reset-hwid-btn').forEach(button => {
+    const lastReset = button.dataset.lastReset;
+    if (lastReset) {
+        updateHwidResetButton(button, lastReset);
+    }
+});
+
+
 function toggleMenu() {
     const burger = document.querySelector('.burger');
     const navLinks = document.querySelector('.nav-links');

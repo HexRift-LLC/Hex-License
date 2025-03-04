@@ -19,12 +19,15 @@ const MongoStore = require('connect-mongo');
 const fetch = require('node-fetch');
 const { sendLog } = require('./utils/discord');
 const User = require('./models/User');
+const { Auth } = require('./API/auth.js');
 const configPath = path.join(__dirname, "../config/config.yml");
 const config = yaml.parse(fs.readFileSync(configPath, "utf8"));
 const app = express();
 
 const PRODUCT_ID = "Hex License";
 const currentVersion = version;
+let lastStatusUpdate = 0;
+const STATUS_UPDATE_INTERVAL = 60 * 60 * 1000; // 1 hour in milliseconds
 
 function displayWelcome() {
   console.clear();
@@ -137,6 +140,16 @@ function startServer() {
   app.use('/api', apiRoutes);
   app.use('/auth', authRoutes);
   app.use('/dashboard', dashboardRoutes);
+  // Handle 404 errors - Place this after all other routes
+app.use((req, res) => {
+  res.redirect('/404');
+});
+
+// Handle all other errors (500) - Place this after 404 handler
+app.use((err, req, res, next) => {
+  console.error(chalk.red('[Error]'), err.stack);
+  res.redirect('/500');
+});
 
   // Discord Bot Setup
   const { Client, GatewayIntentBits } = require("discord.js");
@@ -165,58 +178,61 @@ function startServer() {
     }
     next();
   };
-    async function updateDiscordUsers() {
-        try {
-            const users = await User.find({});
-            let hasUpdates = false;
-            const userStatuses = [];
 
-            for (const user of users) {
-                const response = await fetch(`https://discord.com/api/users/${user.discordId}`, {
-                    headers: {
-                        Authorization: `Bot ${config.discord.bot_token}`
-                    }
-                });
+  async function updateDiscordUsers() {
+    try {
+        const users = await User.find({});
+        let hasUpdates = false;
+        const userStatuses = [];
 
-                const discordUser = await response.json();
-                const needsUpdate = discordUser.username !== user.username || discordUser.avatar !== user.avatar;
-            
-                userStatuses.push({
-                    username: user.username,
-                    hasUpdate: needsUpdate
-                });
-
-                if (needsUpdate) {
-                    hasUpdates = true;
-                    await User.findOneAndUpdate(
-                        { discordId: user.discordId },
-                        {
-                            username: discordUser.username,
-                            avatar: discordUser.avatar
-                        }
-                    );
-
-                    sendLog("user_updated", {
-                        discordId: user.discordId,
-                        oldUsername: user.username,
-                        newUsername: discordUser.username,
-                        avatarChanged: user.avatar !== discordUser.avatar
-                    });
+        for (const user of users) {
+            const response = await fetch(`https://discord.com/api/users/${user.discordId}`, {
+                headers: {
+                    Authorization: `Bot ${config.discord.bot_token}`
                 }
-            }
+            });
 
-            // Send periodic status report
+            const discordUser = await response.json();
+            const needsUpdate = discordUser.username !== user.username || discordUser.avatar !== user.avatar;
+            
+            userStatuses.push({
+                username: user.username,
+                hasUpdate: needsUpdate
+            });
+
+            if (needsUpdate) {
+                hasUpdates = true;
+                await User.findOneAndUpdate(
+                    { discordId: user.discordId },
+                    {
+                        username: discordUser.username,
+                        avatar: discordUser.avatar
+                    }
+                );
+
+                sendLog("user_updated", {
+                    discordId: user.discordId,
+                    oldUsername: user.username,
+                    newUsername: discordUser.username,
+                    avatarChanged: user.avatar !== discordUser.avatar
+                });
+            }
+        }
+
+        // Only send status update if an hour has passed
+        const currentTime = Date.now();
+        if (currentTime - lastStatusUpdate >= STATUS_UPDATE_INTERVAL) {
             sendLog("user_check_status", {
                 hasUpdates,
                 users: userStatuses
             });
-
-        } catch (error) {
-            console.error(chalk.red("[System]"), "Error in background user update:", error);
+            lastStatusUpdate = currentTime;
         }
-    }
 
-    
+    } catch (error) {
+        console.error(chalk.red("[System]"), "Error in background user update:", error);
+    }
+  }    
   // This will run immediately when server starts
   updateDiscordUsers();
 
@@ -240,6 +256,8 @@ async function initialize() {
   displayWelcome();
   await checkVersion();
   watchConfig();
+  await Auth();
   startServer();
 }
 initialize();
+
