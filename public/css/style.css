@@ -342,8 +342,12 @@ body {
 
 /* License Info Section */
 .license-info {
-  padding: 1.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
+
 
 .info-grid {
   display: grid;
@@ -1174,34 +1178,43 @@ body::-webkit-scrollbar {
 
 /* License Card Styles */
 .action-card {
+  width: 100%;
   background: var(--bg-secondary);
   border-radius: 28px;
-  padding: 3rem 2.5rem;
+  padding: 2rem 1.5rem;
   position: relative;
   border: 1px solid var(--border);
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-float);
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .action-card::before {
   content: "";
   position: absolute;
   inset: -1px;
-  border-radius: 29px;
+  border-radius: 24px;
   padding: 1px;
   background: var(--gradient-primary);
-  mask: linear-gradient(#fff 0, #fff 0) content-box, linear-gradient(#fff 0, #fff 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   pointer-events: none;
 }
+.action-container {
+  display: flex; /* Keeps the cards in a horizontal row */
+  flex-wrap: wrap; /* Allows wrapping for smaller screens */
+  justify-content: flex-start; /* Align items to the left */
+  gap: 1.5rem; /* Adds space between the cards */
+}
 
 .action-card h2 {
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   font-weight: 800;
   background: var(--gradient-primary);
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .license-body {

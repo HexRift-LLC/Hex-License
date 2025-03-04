@@ -23,7 +23,7 @@
     
             <div class="nav-menu">
                 <div class="nav-links">
-                    <a href="/dashboard" class="active">
+                    <a href="/dash" class="active">
                         <i class="fas fa-home"></i>
                         <span>Dashboard</span>
                     </a>
@@ -110,7 +110,7 @@
                                         <div class="info-item">
                                             <% if (license.lastHwidReset && (new Date() - new Date(license.lastHwidReset)) < (24 * 60 * 60 * 1000)) { %>
                                                 <div class="reset-countdown">
-                                                    Available in <%= getTimeUntilReset(license.lastHwidReset) %>
+                                                    Available <%= getTimeUntilReset(license.lastHwidReset) %>
                                                 </div>
                                             <% } else { %>
                                                 <button onclick="resetHWID('<%= license._id %>')" class="reset-hwid-btn action-button">
@@ -145,7 +145,7 @@
         </script>
     <% } %>
     
-    <script src="/js/dashboard.js"></script>
+    <script src="/js/dash.js"></script>
     <script src="/js/particles.js"></script>
 </body>
 </html>

@@ -13,13 +13,12 @@ const errorRoutes = require('./routes/error');
 const staffRoutes = require('./routes/staff');
 const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
-const dashboardRoutes = require('./routes/dashboard');
+const dashboardRoutes = require('./routes/dash');
 const { version } = require('../package.json');
 const MongoStore = require('connect-mongo');
 const fetch = require('node-fetch');
 const { sendLog } = require('./utils/discord');
 const User = require('./models/User');
-const { Auth } = require('./API/auth.js');
 const configPath = path.join(__dirname, "../config/config.yml");
 const config = yaml.parse(fs.readFileSync(configPath, "utf8"));
 const app = express();
@@ -139,7 +138,7 @@ function startServer() {
   app.use('/staff', staffRoutes);
   app.use('/api', apiRoutes);
   app.use('/auth', authRoutes);
-  app.use('/dashboard', dashboardRoutes);
+  app.use('/dash', dashboardRoutes);
   // Handle 404 errors - Place this after all other routes
 app.use((req, res) => {
   res.redirect('/404');
@@ -174,7 +173,7 @@ app.use((err, req, res, next) => {
       
     const isAuthorized = req.user.isStaff || req.user.discordId === config.discord.owner_id;
     if (!isAuthorized) {
-      return res.redirect('/dashboard');
+      return res.redirect('/dash');
     }
     next();
   };
@@ -256,7 +255,6 @@ async function initialize() {
   displayWelcome();
   await checkVersion();
   watchConfig();
-  await Auth();
   startServer();
 }
 initialize();

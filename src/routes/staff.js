@@ -25,7 +25,7 @@ const isStaff = (req, res, next) => {
         return res.redirect('/auth/discord');
     }
     if (!(req.user.isStaff || req.user.discordId === config.discord.owner_id)) {
-        return res.redirect('/dashboard');
+        return res.redirect('/dash');
     }
     next();
 };

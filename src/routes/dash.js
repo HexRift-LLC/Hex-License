@@ -36,7 +36,7 @@ router.get('/', isAuthenticated, async (req, res) => {
         return `in ${hours}h ${minutes}m`;
     };
 
-    res.render('dashboard', {
+    res.render('dash', {
         user: req.user,
         licenses,
         config: config,

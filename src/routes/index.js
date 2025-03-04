@@ -3,7 +3,7 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
     if (req.isAuthenticated()) {
-        return res.redirect('/dashboard');
+        return res.redirect('/dash');
     }
     res.render('login');
 });

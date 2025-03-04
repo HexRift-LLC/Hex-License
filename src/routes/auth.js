@@ -63,7 +63,7 @@ passport.use(new DiscordStrategy({
 
 router.get('/discord/callback', 
     passport.authenticate('discord', {
-        successRedirect: '/dashboard',
+        successRedirect: '/dash',
         failureRedirect: '/'
     })
 );
