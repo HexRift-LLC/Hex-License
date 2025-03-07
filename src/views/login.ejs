@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hex License - Your Ultimate License Management Solution">
+    <title>Hex License - Login</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+</head>
+
+<body class="dark-theme">
+    <main class="auth-container">
+        <div class="auth-card fade-scale">
+            <div class="login-header">
+                <h1>Hex License</h1>
+                <p class="subtitle">Your Ultimate License Management</p>
+            </div>
+
+            <div class="login-content">
+                <a href="/auth/discord" class="discord-btn hover-glow" aria-label="Login with Discord">
+                    <i class="fab fa-discord" aria-hidden="true"></i>
+                    Continue with Discord
+                </a>
+            </div>
+
+            <div class="login-footer">
+                <div class="features">
+                    <div class="feature-item fade-scale" style="animation-delay: 0.1s;">
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                        <span>Secure</span>
+                    </div>
+                    <div class="feature-item fade-scale" style="animation-delay: 0.2s;">
+                        <i class="fas fa-bolt" aria-hidden="true"></i>
+                        <span>Fast</span>
+                    </div>
+                    <div class="feature-item fade-scale" style="animation-delay: 0.3s;">
+                        <i class="fas fa-check-circle" aria-hidden="true"></i>
+                        <span>Reliable</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="background-effects">
+            <div class="glow-orb" style="top: 15%; left: 15%;"></div>
+            <div class="glow-orb" style="bottom: 20%; right: 10%;"></div>
+        </div>
+    </main>
+
+    <% if (config.analytics.google.enabled) { %>
+        <!-- Google Analytics -->
+        <script async
+            src="https://www.googletagmanager.com/gtag/js?id=<%= config.analytics.google.tracking_id %>"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', '<%= config.analytics.google.tracking_id %>');
+        </script>
+        <% } %>
+
+            <script src="/js/main.js"></script>
+</body>
+
+</html>

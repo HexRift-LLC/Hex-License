@@ -1,33 +1,39 @@
 {
     "name": "hex-license",
-    "version": "6.6.6",
+    "version": "7.0.0",
     "description": "",
-    "main": "src/server.js",
+    "main": "src/app.js",
     "scripts": {
-      "build": "node build.js"
+        "build": "node build.js"
     },
     "keywords": [],
     "author": "HexRift",
     "license": "ISC",
     "dependencies": {
-      "axios": "^1.8.0",
-      "bcrypt": "^5.1.1",
-      "chalk": "^4.1.2",
-      "colors": "^1.4.0",
-      "connect-mongo": "^5.1.0",
-      "discord.js": "^14.18.0",
-      "ejs": "^3.1.10",
-      "express": "^4.21.2",
-      "express-session": "^1.18.1",
-      "figlet": "^1.8.0",
-      "js-yaml": "^4.1.0",
-      "mongoose": "^8.10.2",
-      "package.json": "^2.0.1",
-      "passport": "^0.7.0",
-      "passport-discord": "^0.1.4",
-      "yaml": "^2.7.0"
+        "axios": "^1.8.0",
+        "bcrypt": "^5.1.1",
+        "chalk": "^4.1.2",
+        "colors": "^1.4.0",
+        "compression": "^1.8.0",
+        "connect-mongo": "^5.1.0",
+        "cors": "^2.8.5",
+        "discord.js": "^14.18.0",
+        "ejs": "^3.1.10",
+        "express": "^4.21.2",
+        "express-rate-limit": "^7.5.0",
+        "express-session": "^1.18.1",
+        "express-validator": "^7.2.1",
+        "figlet": "^1.8.0",
+        "helmet": "^8.0.0",
+        "js-yaml": "^4.1.0",
+        "mongoose": "^8.10.2",
+        "package.json": "^2.0.1",
+        "passport": "^0.7.0",
+        "passport-discord": "^0.1.4",
+        "winston": "^3.17.0",
+        "yaml": "^2.7.0"
     },
     "devDependencies": {
-      "javascript-obfuscator": "^4.1.1"
+        "javascript-obfuscator": "^4.1.1"
     }
-  }
+}

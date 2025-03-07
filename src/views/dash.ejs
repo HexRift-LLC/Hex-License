@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hex License - Your Dashboard">
+    <title>Hex License - Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+
+<body class="dark-theme">
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">Hex License</div>
+
+            <div class="burger" onclick="toggleMenu()">
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+            </div>
+
+            <div class="nav-menu">
+                <div class="nav-links">
+                    <a href="/dash" class="active">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <% if (user && user.isStaff) { %>
+                        <a href="/staff">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Staff Panel</span>
+                        </a>
+                        <% } %>
+                            <a href="/auth/logout" class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header fade-scale">
+            <h1>Welcome, <span class="username">
+                    <%= user.username %>
+                </span></h1>
+
+            <!-- Stats Overview -->
+            <div class="user-stats">
+                <div class="stat-box interactive-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <span class="stat-number">
+                        <%= licenses.length %>
+                    </span>
+                    <span class="stat-label">Total Licenses</span>
+                </div>
+
+                <div class="stat-box interactive-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <span class="stat-number">
+                        <%= licenses.filter(l=> l.hwid).length %>
+                    </span>
+                    <span class="stat-label">Active Licenses</span>
+                </div>
+
+                <div class="stat-box interactive-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <span class="stat-number">
+                        <%= licenses.filter(l=> !l.hwid).length %>
+                    </span>
+                    <span class="stat-label">Inactive Licenses</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Licenses Section -->
+        <section id="license-section" class="content-fade active">
+            <div class="card action-card interactive-card">
+                <h2 class="text-center">Your Licenses</h2>
+                <div class="license-cards">
+                    <% if (licenses.length===0) { %>
+                        <div class="text-center" style="grid-column: 1/-1; padding: 2rem;">
+                            <i class="fas fa-info-circle"
+                                style="font-size: 2rem; color: var(--accent-primary); margin-bottom: 1rem;"></i>
+                            <p>You don't have any licenses yet.</p>
+                        </div>
+                        <% } else { %>
+                            <% licenses.forEach(license=> { %>
+                                <div
+                                    class="license-card interactive-card <%= license.isActive ? 'active' : 'inactive' %>">
+                                    <div class="license-header">
+                                        <span class="status-badge <%= license.isActive ? 'active' : 'inactive' %>">
+                                            <%= license.isActive ? 'Active' : 'Inactive' %>
+                                        </span>
+                                        <span class="product-badge">
+                                            <%= license.product %>
+                                        </span>
+                                    </div>
+                                    <div class="license-info">
+                                        <div class="info-grid">
+                                            <div class="info-item">
+                                                <span class="info-label">License Key</span>
+                                                <div class="key-container">
+                                                    <code
+                                                        class="key-text"><%= license.key.substring(0, license.key.length / 2) %>...</code>
+                                                    <button class="copy-btn" onclick="copyKey('<%= license.key %>')"
+                                                        aria-label="Copy license key">
+                                                        <i class="fas fa-copy"></i> Copy
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">HWID</span>
+                                                <span
+                                                    class="info-value <%= license.hwid ? 'hwid-bound' : 'hwid-unbound' %>">
+                                                    <%= license.hwid ? license.hwid.substring(0, license.hwid.length /
+                                                        2) + '...' : 'Not bound' %>
+                                                </span>
+                                            </div>
+                                            <div class="info-item">
+                                                <span class="info-label">Created</span>
+                                                <span class="info-value">
+                                                    <%= license.createdAt.toLocaleDateString() %>
+                                                </span>
+                                            </div>
+                                            <div class="info-item">
+                                                <% if (license.lastHwidReset && (new Date() - new
+                                                    Date(license.lastHwidReset)) < (24 * 60 * 60 * 1000)) { %>
+                                                    <div class="reset-countdown">
+                                                        <i class="fas fa-clock"></i> Available <%=
+                                                            getTimeUntilReset(license.lastHwidReset) %>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <button data-license-id="<%= license._id %>" class="reset-hwid-btn action-button">
+                                                            Reset HWID
+                                                        </button>
+                                                        <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }) %>
+                                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="copyright">© 2023 - <%= new Date().getFullYear() %>
+                        <%= config.footer.copyright %>
+                </div>
+                <div class="version">v<%= version %>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Notification Stack -->
+    <div class="notification-stack" id="notificationStack"></div>
+
+    <% if (config.analytics.google.enabled) { %>
+        <!-- Google Analytics -->
+        <script async
+            src="https://www.googletagmanager.com/gtag/js?id=<%= config.analytics.google.tracking_id %>"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', '<%= config.analytics.google.tracking_id %>');
+        </script>
+        <% } %>
+
+            <!-- Scripts -->
+            <script src="/js/main.js"></script>
+</body>
+
+</html>

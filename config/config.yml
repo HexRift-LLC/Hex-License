@@ -1,24 +1,35 @@
+auth:
+  key: "Your key here"
+
 server:
   port: 3000
-  session_secret: "fubjTmrOM5PH5rElkTGK##0WqXnC*zYwYMBDKHbXjj$i%"
+  session_secret: "Your secret here"
+
+contentSecurityPolicy:  
+  allowedOrigins: "*"
+  defaultSrc: "'self' 'cdnjs.cloudflare.com' 'www.googletagmanager.com' 'unsafe-inline'"
+  scriptSrc: "'self' 'unsafe-inline' 'unsafe-eval'"
+  scriptSrcAttr: "'unsafe-inline'"
+  styleSrc: "'self' 'cdnjs.cloudflare.com' 'fonts.googleapis.com' 'unsafe-inline'"
+  imgSrc: "'self' data: 'cdn.discordapp.com' 'img.hexrift.net' 'www.googletagmanager.com'   'www.google-analytics.com' 'www.googletagmanager.com' 'www.google-analytics.com' 'www.google.com' 'www.gstatic.com' 'www.cloudflare.com'"
+  connectSrc: "'self' 'unsafe-inline' 'www.google-analytics.com'"
+  fontSrc: "'self'  'cdnjs.cloudflare.com' 'fonts.googleapis.com' 'fonts.gstatic.com'"
+  objectSrc: "'none'"
+  upgradeInsecureRequests: true
 
 mongodb:
-  uri: "mongodb://localhost:27017/hex-license"
+  uri: "mongodb://localhost:27017/Hex-License"
 
 discord:
-  bot_token: "MTMzOTg3ODA5NzQzNjI4MjkxMQ.GF0hhV.QKWLt3v3yP_SM1ob4vEbxgmxnyQ2bsTGDcEXX8"
-  client_id: "1339878097436282911"
-  client_secret: "QXjM8eOqMAvB4DXRF81rjGR9rpgfuyjB"
+  bot_token: "Your bot token here"
+  client_id: "Your client id here"
+  client_secret: "Your client secret here"
   callback_url: "http://localhost:3000/auth/discord/callback"
-  owner_id: "392855285263499274"
-  guild_id: "1323896546538033233"
-  logChannelId: "1344655375798108281"
+  owner_id: "Your discord id here"
+  guild_id: "Your guild id here"
+  logChannelId: "Your log channel id here"
   botIconUrl: "https://img.hexrift.net/Hex-L-T.png"
   embedColor: "#6366f1"
-
-support:
- discord: ""
- docs: ""
 
 license:
   key_length: 24
