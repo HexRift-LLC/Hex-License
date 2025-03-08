@@ -1,3 +1,48 @@
-const AuthModule = require('./API/checker.js');
-const AuthenticationManager = AuthModule.default || AuthModule;
-const authManager = new AuthenticationManager();
+/**
+ * Validate license before starting the application
+ */
+async function validateLicense() {
+    try {
+      console.log(chalk.cyan("[System]"), "Initializing license verification...");
+      
+      // Initialize authentication manager
+      const AuthModule = require("./API/checker.js");
+      const AuthenticationManager = AuthModule.default || AuthModule;
+      const authManager = new AuthenticationManager();
+      
+      // Validate license
+      const isValid = await authManager.validate();
+      if (!isValid) {
+        logger.error("License validation failed. Application will now exit.");
+        console.error(chalk.red("[Fatal]"), "License validation failed. Application will now exit.");
+        process.exit(1);
+      }
+      
+      console.log(chalk.green("[System]"), "License validated successfully");
+      return true;
+    } catch (error) {
+      logger.error(`License validation error: ${error.message}`);
+      console.error(chalk.red("[Fatal]"), `License validation error: ${error.message}`);
+      process.exit(1);
+    }
+  }
+
+
+
+  (async function startApp() {
+    try {
+      // Display welcome banner
+      displayWelcome();
+      
+      // Validate license - must happen before anything else
+      const licenseValid = await validateLicense();
+      
+      // Only if license is valid, initialize the application
+      if (licenseValid) {
+        await initializeApplication();
+      }
+    } catch (error) {
+      console.error(chalk.red("[Fatal]"), `Startup error: ${error.message}`);
+      process.exit(1);
+    }
+  })();
