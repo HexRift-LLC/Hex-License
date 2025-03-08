@@ -281,44 +281,6 @@ function setupExpress() {
   app.set("views", path.join(__dirname, "views"));
   app.set("trust proxy", 1); // Trust first proxy
   
-  // Security middleware
-// Security middleware
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: [config.contentSecurityPolicy.defaultSrc],
-      scriptSrc: [config.contentSecurityPolicy.scriptSrc],
-      scriptSrcAttr: [config.contentSecurityPolicy.scriptSrcAttr], // Added for inline event handlers
-      styleSrc: [config.contentSecurityPolicy.styleSrc],
-      imgSrc: [config.contentSecurityPolicy.imgSrc], // Added googletagmanager
-      connectSrc: [config.contentSecurityPolicy.connectSrc],
-      fontSrc: [config.contentSecurityPolicy.fontSrc],
-      objectSrc: [config.contentSecurityPolicy.objectSrc],
-      upgradeInsecureRequests: [config.contentSecurityPolicy.upgradeInsecureRequests],
-    }
-  },
-  // Allow embedding in iframes from same origin
-  frameguard: { action: 'sameorigin' }
-}));
-  
-  // Enable CORS for API
-  app.use('/api', cors({
-    origin: function(origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      // Add your allowed origins here for production
-      const allowedOrigins = config.contentSecurityPolicy.allowedOrigins;
-      if (allowedOrigins.indexOf(origin) !== -1 || config.server.NODE_ENV !== 'Production') {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true
-  }));
-  
   // Rate limiting - general
   const generalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes

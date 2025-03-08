@@ -5,18 +5,6 @@ server:
   port: 3000
   session_secret: "Your secret here"
 
-contentSecurityPolicy:  
-  allowedOrigins: "*"
-  defaultSrc: "'self' 'cdnjs.cloudflare.com' 'www.googletagmanager.com' 'unsafe-inline'"
-  scriptSrc: "'self' 'unsafe-inline' 'unsafe-eval'"
-  scriptSrcAttr: "'unsafe-inline'"
-  styleSrc: "'self' 'cdnjs.cloudflare.com' 'fonts.googleapis.com' 'unsafe-inline'"
-  imgSrc: "'self' data: 'cdn.discordapp.com' 'img.hexrift.net' 'www.googletagmanager.com'   'www.google-analytics.com' 'www.googletagmanager.com' 'www.google-analytics.com' 'www.google.com' 'www.gstatic.com' 'www.cloudflare.com'"
-  connectSrc: "'self' 'unsafe-inline' 'www.google-analytics.com'"
-  fontSrc: "'self'  'cdnjs.cloudflare.com' 'fonts.googleapis.com' 'fonts.gstatic.com'"
-  objectSrc: "'none'"
-  upgradeInsecureRequests: true
-
 mongodb:
   uri: "mongodb://localhost:27017/Hex-License"
 
