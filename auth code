@@ -1,4 +1,3 @@
-const { Auth } = require('./API/auth.js');
-
-await Auth(); // Wait for auth to complete
-startServer(); // Then start the server
+const AuthModule = require('./API/checker.js');
+const AuthenticationManager = AuthModule.default || AuthModule;
+const authManager = new AuthenticationManager();
