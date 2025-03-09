@@ -125,14 +125,22 @@ class AuthenticationManager {
         return false;
       }
     } catch (error) {
-      // Change error message for 404 errors to "Unauthenticated user"
+      // Handle authentication failures
       if (error.response && error.response.status === 404) {
-        console.error(chalk.red("[Auth]"), 'Unauthenticated user');
-        
-        this.licenseInfo = {
-          valid: false,
-          error: "Unauthenticated user"
-        };
+        // Server returns 404 when no key is given or key is invalid
+        if (!this.licenseKey || this.licenseKey.trim() === '') {
+          console.error(chalk.red("[Auth]"), 'License validation error: No license key provided in config');
+          this.licenseInfo = {
+            valid: false,
+            error: "No license key provided in config"
+          };
+        } else {
+          console.error(chalk.red("[Auth]"), 'License validation error: Invalid license key');
+          this.licenseInfo = {
+            valid: false,
+            error: "Invalid license key"
+          };
+        }
       } else {
         console.error(chalk.red("[Auth]"), `License validation error: ${error.message}`);
         
@@ -141,8 +149,6 @@ class AuthenticationManager {
           error: error.message
         };
       }
-      
-      // Don't attempt offline validation on startup
       return false;
     }
   }
