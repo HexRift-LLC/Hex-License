@@ -1,0 +1,18 @@
+    // License validation step
+    console.log(chalk.cyan("[System]"), "Initializing license verification...");
+    const AuthManager = require("./API/checker.js");
+    const authManager = new AuthManager();
+    
+    // Validate license - must happen before anything else
+    const isLicenseValid = await authManager.validate();
+    
+    if (!isLicenseValid) {
+      logger.error("License validation failed. Application will now exit.");
+      console.error(chalk.red("[Fatal]"), "License validation failed. Application will now exit.");
+      process.exit(1);
+    }
+    
+    console.log(chalk.green("[System]"), "License validated successfully");
+    
+    // NOW it's safe to load all the other modules and start the application
+    const app = await initializeFullApplication();

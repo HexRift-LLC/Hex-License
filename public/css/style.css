@@ -518,7 +518,7 @@ a:hover {
 /* License Cards Container */
 .license-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1.75rem;
   padding: 1rem 0;
 }
@@ -532,6 +532,9 @@ a:hover {
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .license-card::before {
@@ -658,41 +661,87 @@ a:hover {
 /* License Info */
 .license-info {
   padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
 }
-
+.info-grid .info-item:first-child {
+  grid-column: 1 / -1;
+  margin-bottom: 1.5rem;
+}
 .info-item {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
 }
 
 .info-label {
   color: var(--text-secondary);
   font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .info-value {
-  font-size: 0.95rem;
-  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(12, 16, 29, 0.6);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+/* Add icons to labels */
+.info-label::before {
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 1rem;
+}
+/* License Key icon */
+.info-item:nth-child(1) .info-label::before {
+  content: '\f084'; /* Key icon */
+  color: var(--accent-primary);
+}
+
+/* HWID icon */
+.info-item:nth-child(2) .info-label::before {
+  content: '\f505'; /* Fingerprint icon */
+  color: var(--success);
+}
+
+/* Created icon */
+.info-item:nth-child(3) .info-label::before {
+  content: '\f073'; /* Calendar icon */
+  color: var(--accent-primary);
 }
 
 /* Key Container */
 .key-container {
   background: rgba(12, 16, 29, 0.6);
   border-radius: 12px;
-  padding: 1rem;
+  padding: 0.875rem 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid var(--border);
-  margin-top: 0.5rem;
+  border: 1px solid rgba(88, 101, 242, 0.2);
+  margin-top: 0.25rem;
+  transition: all 0.2s ease;
+}
+.key-container:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 10px rgba(88, 101, 242, 0.2);
 }
 
 .key-text {
@@ -700,8 +749,11 @@ a:hover {
   font-size: 0.9rem;
   color: var(--accent-primary);
   letter-spacing: 0.05em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70%;
 }
-
 /* Copy Button */
 .copy-btn {
   background: rgba(88, 101, 242, 0.1);
@@ -716,6 +768,8 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .copy-btn:hover {
@@ -739,15 +793,28 @@ a:hover {
 }
 
 .hwid-bound {
-  background: rgba(0, 255, 163, 0.1);
+  background: rgba(0, 255, 163, 0.05);
   color: var(--success);
   border: 1px solid rgba(0, 255, 163, 0.2);
 }
-
+.hwid-bound::before {
+  content: '\f023'; /* Lock icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
 .hwid-unbound {
-  background: rgba(255, 184, 56, 0.1);
+  background: rgba(255, 184, 56, 0.05);
   color: var(--warning);
   border: 1px solid rgba(255, 184, 56, 0.2);
+}
+.hwid-unbound::before {
+  content: '\f3c1'; /* Unlock icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
 }
 /* Staff Navigation */
 .staff-nav {
@@ -1020,25 +1087,21 @@ a:hover {
 
 /* Reset HWID Button */
 .reset-hwid-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+  justify-content: center;
   background: rgba(88, 101, 242, 0.1);
   border: 1px solid rgba(88, 101, 242, 0.2);
   color: var(--accent-primary);
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem 0;
   border-radius: 12px;
   font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  transition: all 0.3s ease;
 }
 
 .reset-hwid-btn:hover:not(:disabled) {
   background: var(--gradient-primary);
   color: white;
-  border-color: transparent;
   transform: translateY(-3px);
   box-shadow: var(--shadow-sm), var(--neon-primary);
 }
@@ -1102,12 +1165,12 @@ a:hover {
 
 /* Countdown for HWID Reset */
 .reset-countdown {
-  background: rgba(12, 16, 29, 0.6);
-  border: 1px solid var(--border);
+  background: rgba(255, 184, 56, 0.1);
+  color: var(--warning);
+  border: 1px solid rgba(255, 184, 56, 0.2);
+  width: 100%;
+  padding: 0.75rem;
   border-radius: 12px;
-  padding: 0.75rem 1rem;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1154,18 +1217,229 @@ a:hover {
 
 .user-body {
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
-
 .user-info p {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 8px;
+}
+.user-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.user-detail-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   color: var(--text-secondary);
-  margin: 0.5rem 0;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 
+.user-detail-value {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(12, 16, 29, 0.6);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* Discord ID styling */
+.discord-label::before {
+  content: '\f392'; /* Discord icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: var(--accent-primary);
+}
+
+.discord-value {
+  background: rgba(88, 101, 242, 0.05);
+  color: var(--accent-primary);
+  border: 1px solid rgba(88, 101, 242, 0.2);
+}
+
+.discord-value::before {
+  content: '\f392'; /* Discord icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+/* Username styling */
+.username-label::before {
+  content: '\f007'; /* User icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: var(--accent-tertiary);
+}
+
+.username-value {
+  background: rgba(236, 72, 153, 0.05);
+  color: var(--accent-tertiary);
+  border: 1px solid rgba(236, 72, 153, 0.2);
+}
+
+.username-value::before {
+  content: '\f4fc'; /* User check icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+/* Licenses styling */
+.licenses-label::before {
+  content: '\f084'; /* Key icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: var(--success);
+}
+
+.licenses-value-active {
+  background: rgba(0, 255, 163, 0.05);
+  color: var(--success);
+  border: 1px solid rgba(0, 255, 163, 0.2);
+}
+
+.licenses-value-active::before {
+  content: '\f5a0'; /* Key chain icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+.licenses-value-none {
+  background: rgba(255, 184, 56, 0.05);
+  color: var(--warning);
+  border: 1px solid rgba(255, 184, 56, 0.2);
+}
+/* Error details styling */
+.error-details {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin: 0.5rem 0 1.5rem;
+  text-align: center;
+}
+
+/* Error code styling */
+.error-code {
+  display: inline-block;
+  background: rgba(88, 101, 242, 0.1);
+  color: var(--accent-primary);
+  border: 1px solid rgba(88, 101, 242, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+/* Improved error actions */
+.error-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Ensuring consistent action button styling */
+.error-actions .action-btn,
+.error-actions .discord-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  min-width: 160px;
+}
+
+.error-actions .action-btn {
+  background: var(--gradient-primary);
+}
+
+.licenses-value-none::before {
+  content: '\f023'; /* Lock icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+.user-info p::before {
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.75rem;
+  width: 20px;
+  text-align: center;
+}
+
+/* Discord ID styling */
+.user-info p:nth-child(1) {
+  background: rgba(88, 101, 242, 0.1);
+  color: var(--accent-primary);
+  border: 1px solid rgba(88, 101, 242, 0.2);
+}
+
+.user-info p:nth-child(1)::before {
+  content: '\f392'; /* Discord icon */
+}
+
+/* Username styling */
+.user-info p:nth-child(2) {
+  background: rgba(236, 72, 153, 0.1);
+  color: var(--accent-tertiary);
+  border: 1px solid rgba(236, 72, 153, 0.2);
+}
+
+.user-info p:nth-child(2)::before {
+  content: '\f007'; /* User icon */
+}
+
+/* Active Licenses styling */
+.user-info p:nth-child(3) {
+  background: rgba(0, 255, 163, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(0, 255, 163, 0.2);
+}
+
+.user-info p:nth-child(3)::before {
+  content: '\f084'; /* Key icon */
+}
+
+/* Special styling for zero licenses */
+.user-info p:nth-child(3):has(span:contains('0')) {
+  background: rgba(255, 184, 56, 0.1);
+  color: var(--warning);
+  border: 1px solid rgba(255, 184, 56, 0.2);
+}
+
+/* Improve spacing in user-info container */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* User card improvements */
+.user-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 .user-actions {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.5rem;
   padding: 1.5rem;
   border-top: 1px solid var(--border);
 }
@@ -1444,6 +1718,35 @@ a:hover {
   box-shadow: var(--shadow-md), var(--neon-primary);
 }
 
+/* Created Date Styling Enhancement */
+.info-value.created-date {
+  background: rgba(88, 101, 242, 0.1);
+  color: var(--accent-primary);
+  border: 1px solid rgba(88, 101, 242, 0.2);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+}
+.created-date {
+  background: rgba(88, 101, 242, 0.05);
+  color: var(--accent-primary);
+  border: 1px solid rgba(88, 101, 242, 0.2);
+}
+.created-date::before {
+  content: '\f133'; /* Calendar check icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+/* Reset HWID button - Better positioned */
+.info-item:nth-child(4) {
+  margin-top: 0.5rem;
+}
 /* Responsive Design */
 @media (max-width: 1200px) {
   .container {
@@ -1533,7 +1836,10 @@ a:hover {
   }
   
   .info-grid {
+    display: grid;
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+    height: 100%;
   }
   
   .user-actions {
@@ -1563,6 +1869,35 @@ a:hover {
   .product-item .delete-btn {
     width: 100%;
     justify-content: center;
+  }
+  .license-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .key-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .key-text {
+    max-width: 100%;
+  }
+  
+  .copy-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .info-grid .info-item:first-child {
+    grid-column: auto;
+  }
+  .info-value.created-date {
+    width: fit-content;
   }
 }
 
@@ -1606,6 +1941,15 @@ a:hover {
   .key-text {
     font-size: 0.8rem;
   }
+  .license-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  
+  .reset-hwid-btn {
+    width: 100%;
+  }
 }
 
 /* Interactive Elements */
@@ -1631,23 +1975,218 @@ a:hover {
 /* License Card Body & Actions */
 .license-body {
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
+
 .key-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
 }
 
 .key-section label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   color: var(--text-secondary);
-  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.key-section label::before {
+  content: '\f084'; /* Key icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: var(--accent-primary);
+}
+/* Create new styled detail items */
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.detail-value {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(12, 16, 29, 0.6);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.details p {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.details p::before {
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-right: 0.75rem;
+  width: 20px;
+  text-align: center;
+}
+
+/* Expires styling */
+.expires-label::before {
+  content: '\f073'; /* Calendar icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: var(--accent-primary);
+}
+
+.expires-value {
+  background: rgba(88, 101, 242, 0.05);
+  color: var(--accent-primary);
+  border: 1px solid rgba(88, 101, 242, 0.2);
+}
+
+.expires-value::before {
+  content: '\f133'; /* Calendar check icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+/* Expires styling */
+.details p:nth-child(1) {
+  background: rgba(88, 101, 242, 0.1);
+  color: var(--accent-primary);
+  border: 1px solid rgba(88, 101, 242, 0.2);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.details p:nth-child(1)::before {
+  content: '\f073'; /* Calendar icon */
+}
+/* HWID styling */
+.hwid-label::before {
+  content: '\f505'; /* Fingerprint icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: var(--success);
+}
+
+.hwid-value-bound {
+  background: rgba(0, 255, 163, 0.05);
+  color: var(--success);
+  border: 1px solid rgba(0, 255, 163, 0.2);
+}
+
+.hwid-value-bound::before {
+  content: '\f023'; /* Lock icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+.hwid-value-unbound {
+  background: rgba(255, 184, 56, 0.05);
+  color: var(--warning);
+  border: 1px solid rgba(255, 184, 56, 0.2);
+}
+
+.hwid-value-unbound::before {
+  content: '\f3c1'; /* Unlock icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+/* User styling */
+.user-label::before {
+  content: '\f007'; /* User icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: var(--accent-tertiary);
+}
+
+.user-value-assigned {
+  background: rgba(236, 72, 153, 0.05);
+  color: var(--accent-tertiary);
+  border: 1px solid rgba(236, 72, 153, 0.2);
+}
+
+.user-value-assigned::before {
+  content: '\f4fc'; /* User check icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+.user-value-unassigned {
+  background: rgba(255, 184, 56, 0.05);
+  color: var(--warning);
+  border: 1px solid rgba(255, 184, 56, 0.2);
+}
+
+.user-value-unassigned::before {
+  content: '\f007'; /* User icon */
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+}
+
+/* HWID styling */
+.details p:nth-child(2) {
+  background: rgba(0, 255, 163, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(0, 255, 163, 0.2);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
-.details p {
-  color: var(--text-secondary);
-  margin: 0.5rem 0;
-  font-size: 0.95rem;
+.details p:nth-child(2)::before {
+  content: '\f505'; /* Fingerprint icon */
+}
+
+/* Not bound HWID styling */
+.details p:nth-child(2):contains('Not bound') {
+  background: rgba(255, 184, 56, 0.1);
+  color: var(--warning);
+  border: 1px solid rgba(255, 184, 56, 0.2);
+}
+
+/* User styling */
+.details p:nth-child(3) {
+  background: rgba(236, 72, 153, 0.1);
+  color: var(--accent-tertiary);
+  border: 1px solid rgba(236, 72, 153, 0.2);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.details p:nth-child(3)::before {
+  content: '\f007'; /* User icon */
+}
+
+/* Unassigned user styling */
+.details p:nth-child(3):contains('Unassigned') {
+  background: rgba(255, 184, 56, 0.1);
+  color: var(--warning);
+  border: 1px solid rgba(255, 184, 56, 0.2);
+}
+
+/* Improve spacing in details container */
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .license-actions {
@@ -1772,4 +2311,12 @@ a:hover {
   background: var(--accent-primary);
   color: white;
   text-shadow: none;
+}
+@keyframes pulse-fade {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.fa-hourglass-half {
+  animation: pulse-fade 2s infinite;
 }

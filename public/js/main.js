@@ -1193,5 +1193,307 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 })();
+  // Function to show selected section
+  function showSection(sectionId, event) {
+    // Hide all sections
+    document.querySelectorAll('.staff-section').forEach(section => {
+        section.classList.remove('active');
+    });
 
+    // Remove active class from all nav buttons
+    document.querySelectorAll('.staff-nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
 
+    // Show selected section
+    document.getElementById(sectionId + '-section').classList.add('active');
+
+    // Add active class to clicked button
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+    }
+}
+
+// Functions for staff actions
+async function deleteProduct(productId) {
+    if (confirm('Are you sure you want to delete this product?')) {
+        try {
+            const response = await fetch(`/api/products/${productId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                createNotification('Product deleted successfully', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                const data = await response.json();
+                createNotification(data.message || 'Failed to delete product', 'error');
+            }
+        } catch (error) {
+            createNotification('An error occurred', 'error');
+        }
+    }
+}
+
+async function toggleLicense(licenseId, button) {
+    try {
+        const isActive = button.classList.contains('active');
+        const action = isActive ? 'deactivate' : 'activate';
+
+        const response = await fetch(`/api/licenses/${licenseId}/${action}`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            createNotification(`License ${isActive ? 'deactivated' : 'activated'} successfully`, 'success');
+
+            // Update button state
+            button.classList.toggle('active');
+            button.classList.toggle('inactive');
+            button.innerHTML = `<i class="fas fa-power-off"></i> ${isActive ? 'Activate Key' : 'Deactivate Key'}`;
+
+            // Update parent card and badge
+            const card = button.closest('.license-card');
+            const badge = card.querySelector('.status-badge');
+
+            card.classList.toggle('active');
+            card.classList.toggle('inactive');
+            badge.classList.toggle('active');
+            badge.classList.toggle('inactive');
+            badge.textContent = isActive ? 'Inactive' : 'Active';
+        } else {
+            const data = await response.json();
+            createNotification(data.message || 'Failed to update license', 'error');
+        }
+    } catch (error) {
+        createNotification('An error occurred', 'error');
+    }
+}
+
+async function resetHWID(licenseId) {
+    try {
+        const response = await fetch(`/api/licenses/${licenseId}/reset-hwid`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            createNotification('HWID reset successfully', 'success');
+            setTimeout(() => window.location.reload(), 1000);
+        } else {
+            const data = await response.json();
+            createNotification(data.message || 'Failed to reset HWID', 'error');
+        }
+    } catch (error) {
+        createNotification('An error occurred', 'error');
+    }
+}
+
+async function deleteLicense(licenseId) {
+    if (confirm('Are you sure you want to delete this license?')) {
+        try {
+            const response = await fetch(`/api/licenses/${licenseId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                createNotification('License deleted successfully', 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                const data = await response.json();
+                createNotification(data.message || 'Failed to delete license', 'error');
+            }
+        } catch (error) {
+            createNotification('An error occurred', 'error');
+        }
+    }
+}
+
+async function toggleBan(userId, button) {
+    try {
+        const isBanned = button.classList.contains('success');
+        const action = isBanned ? 'unban' : 'ban';
+
+        const response = await fetch(`/api/users/${userId}/${action}`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            createNotification(`User ${isBanned ? 'unbanned' : 'banned'} successfully`, 'success');
+
+            // Update button
+            button.classList.toggle('success');
+            button.classList.toggle('danger');
+            button.innerHTML = `<i class="fas ${isBanned ? 'fa-ban' : 'fa-unlock'}"></i> ${isBanned ? 'Ban User' : 'Unban User'}`;
+
+            // Update status badge
+            const card = button.closest('.user-card');
+            const badge = card.querySelector('.status-badge');
+
+            badge.classList.toggle('active');
+            badge.classList.toggle('inactive');
+            badge.textContent = isBanned ? 'Active' : 'Banned';
+        } else {
+            const data = await response.json();
+            createNotification(data.message || 'Failed to update user', 'error');
+        }
+    } catch (error) {
+        createNotification('An error occurred', 'error');
+    }
+}
+
+async function toggleStaff(userId, button) {
+    try {
+        const isStaff = button.classList.contains('staff-active');
+        const action = isStaff ? 'remove-staff' : 'make-staff';
+
+        const response = await fetch(`/api/users/${userId}/${action}`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            createNotification(`User ${isStaff ? 'removed from' : 'added to'} staff successfully`, 'success');
+
+            // Update button
+            button.classList.toggle('staff-active');
+            button.classList.toggle('staff-inactive');
+            button.innerHTML = `<i class="fas ${isStaff ? 'fa-user-plus' : 'fa-user-minus'}"></i> ${isStaff ? 'Make Staff' : 'Remove Staff'}`;
+
+            // Update staff badge
+            const card = button.closest('.user-card');
+            const badge = card.querySelector('.user-status');
+
+            badge.classList.toggle('staff');
+            badge.textContent = isStaff ? 'User' : 'Staff';
+        } else {
+            const data = await response.json();
+            createNotification(data.message || 'Failed to update user', 'error');
+        }
+    } catch (error) {
+        createNotification('An error occurred', 'error');
+    }
+}
+
+  // Enhance styling for the details in License Management section
+  document.addEventListener('DOMContentLoaded', function() {
+    // Style all paragraphs in the details section with base styling
+    document.querySelectorAll('.details p').forEach((el, index) => {
+      // First paragraph - Expires date
+      if (index === 0) {
+        el.innerHTML = el.innerHTML.replace('Expires:', '<i class="fas fa-calendar-alt" aria-hidden="true"></i> Expires:');
+        el.style.background = 'rgba(88, 101, 242, 0.1)';
+        el.style.color = 'var(--accent-primary)';
+        el.style.borderColor = 'rgba(88, 101, 242, 0.2)';
+        el.style.border = '1px solid rgba(88, 101, 242, 0.2)';
+        el.style.padding = '0.5rem 0.75rem';
+        el.style.borderRadius = '8px';
+        el.style.fontWeight = '500';
+        el.style.fontSize = '0.875rem';
+        el.style.display = 'flex';
+        el.style.alignItems = 'center';
+        el.style.gap = '0.5rem';
+      }
+      
+      // Second paragraph - HWID
+      else if (index === 1) {
+        if (el.textContent.includes('Not bound')) {
+          el.innerHTML = el.innerHTML.replace('HWID:', '<i class="fas fa-fingerprint" aria-hidden="true"></i> HWID:');
+          el.style.background = 'rgba(255, 184, 56, 0.1)';
+          el.style.color = 'var(--warning)';
+          el.style.border = '1px solid rgba(255, 184, 56, 0.2)';
+        } else {
+          el.innerHTML = el.innerHTML.replace('HWID:', '<i class="fas fa-fingerprint" aria-hidden="true"></i> HWID:');
+          el.style.background = 'rgba(0, 255, 163, 0.1)';
+          el.style.color = 'var(--success)';
+          el.style.border = '1px solid rgba(0, 255, 163, 0.2)';
+        }
+        el.style.padding = '0.5rem 0.75rem';
+        el.style.borderRadius = '8px';
+        el.style.fontWeight = '500';
+        el.style.fontSize = '0.875rem';
+        el.style.display = 'flex';
+        el.style.alignItems = 'center';
+        el.style.gap = '0.5rem';
+      }
+      
+      // Third paragraph - User
+      else if (index === 2) {
+        if (el.textContent.includes('Unassigned')) {
+          el.innerHTML = el.innerHTML.replace('User:', '<i class="fas fa-user" aria-hidden="true"></i> User:');
+          el.style.background = 'rgba(255, 184, 56, 0.1)';
+          el.style.color = 'var(--warning)';
+          el.style.border = '1px solid rgba(255, 184, 56, 0.2)';
+        } else {
+          el.innerHTML = el.innerHTML.replace('User:', '<i class="fas fa-user" aria-hidden="true"></i> User:');
+          el.style.background = 'rgba(236, 72, 153, 0.1)';
+          el.style.color = 'var(--accent-tertiary)';
+          el.style.border = '1px solid rgba(236, 72, 153, 0.2)';
+        }
+        el.style.padding = '0.5rem 0.75rem';
+        el.style.borderRadius = '8px';
+        el.style.fontWeight = '500';
+        el.style.fontSize = '0.875rem';
+        el.style.display = 'flex';
+        el.style.alignItems = 'center';
+        el.style.gap = '0.5rem';
+      }
+    });
+    
+    // Style all paragraphs in the user-info section
+    document.querySelectorAll('.user-info p').forEach((el, index) => {
+      // First paragraph - Discord ID
+      if (index === 0) {
+        el.innerHTML = el.innerHTML.replace('Discord ID:', '<i class="fab fa-discord" aria-hidden="true"></i> Discord ID:');
+        el.style.background = 'rgba(88, 101, 242, 0.1)';
+        el.style.color = 'var(--accent-primary)';
+        el.style.border = '1px solid rgba(88, 101, 242, 0.2)';
+      }
+      
+      // Second paragraph - Username
+      else if (index === 1) {
+        el.innerHTML = el.innerHTML.replace('Username:', '<i class="fas fa-user" aria-hidden="true"></i> Username:');
+        el.style.background = 'rgba(236, 72, 153, 0.1)';
+        el.style.color = 'var(--accent-tertiary)';
+        el.style.border = '1px solid rgba(236, 72, 153, 0.2)';
+      }
+      
+      // Third paragraph - Active Licenses
+      else if (index === 2) {
+        // Check if active licenses is 0
+        if (el.textContent.includes('Active Licenses: 0')) {
+          el.innerHTML = el.innerHTML.replace('Active Licenses:', '<i class="fas fa-key" aria-hidden="true"></i> Active Licenses:');
+          el.style.background = 'rgba(255, 184, 56, 0.1)';
+          el.style.color = 'var(--warning)';
+          el.style.border = '1px solid rgba(255, 184, 56, 0.2)';
+        } else {
+          el.innerHTML = el.innerHTML.replace('Active Licenses:', '<i class="fas fa-key" aria-hidden="true"></i> Active Licenses:');
+          el.style.background = 'rgba(0, 255, 163, 0.1)';
+          el.style.color = 'var(--success)';
+          el.style.border = '1px solid rgba(0, 255, 163, 0.2)';
+        }
+      }
+      
+      // Apply common styling to all paragraphs
+      el.style.padding = '0.5rem 0.75rem';
+      el.style.borderRadius = '8px';
+      el.style.fontWeight = '500';
+      el.style.fontSize = '0.875rem';
+      el.style.display = 'flex';
+      el.style.alignItems = 'center';
+      el.style.gap = '0.5rem';
+      el.style.marginBottom = '0.75rem';
+    });
+    
+    // Add spacing to containers
+    document.querySelectorAll('.details').forEach(el => {
+      el.style.display = 'flex';
+      el.style.flexDirection = 'column';
+      el.style.gap = '0.75rem';
+      el.style.marginTop = '1rem';
+    });
+    
+    document.querySelectorAll('.user-info').forEach(el => {
+      el.style.display = 'flex';
+      el.style.flexDirection = 'column';
+      el.style.gap = '0.75rem';
+    });
+  });

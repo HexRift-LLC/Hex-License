@@ -28,21 +28,45 @@
             <p class="error-message">
                 <%= errorMessage %>
             </p>
+            
+            <% if (typeof errorDetails !== 'undefined' && errorDetails) { %>
+                <p class="error-details">
+                    <%= errorDetails %>
+                </p>
+            <% } %>
+            
+            <% if (typeof errorCode !== 'undefined' && errorCode) { %>
+                <div class="error-code">
+                    Error Code: <%= errorCode %>
+                </div>
+            <% } %>
 
             <div class="error-actions">
-                <% if (errorType==='banned' ) { %>
-                    <a href="https://hexarion.net/discord" class="discord-btn hover-glow">
-                        <i class="fab fa-discord"></i> Appeal Ban
-                    </a>
-                    <% } else if (errorType==='404' ) { %>
+                <% if (typeof errorActions !== 'undefined' && errorActions && errorActions.length > 0) { %>
+                    <% errorActions.forEach(action => { %>
+                        <a href="<%= action.url %>" class="<%= action.primary ? 'discord-btn' : 'action-btn' %> hover-glow">
+                            <i class="fas <%= action.icon %>"></i> <%= action.text %>
+                        </a>
+                    <% }) %>
+                <% } else { %>
+                    <% if (errorType === 'banned') { %>
+                        <a href="https://hexarion.net/discord" class="discord-btn hover-glow">
+                            <i class="fab fa-discord"></i> Appeal Ban
+                        </a>
+                    <% } else if (errorType === 'ratelimited') { %>
                         <a href="/" class="action-btn hover-glow">
                             <i class="fas fa-home"></i> Return Home
                         </a>
-                        <% } else { %>
-                            <a href="/" class="action-btn hover-glow">
-                                <i class="fas fa-redo"></i> Try Again
-                            </a>
-                            <% } %>
+                    <% } else if (errorType === '404') { %>
+                        <a href="/" class="action-btn hover-glow">
+                            <i class="fas fa-home"></i> Return Home
+                        </a>
+                    <% } else { %>
+                        <a href="/" class="action-btn hover-glow">
+                            <i class="fas fa-redo"></i> Try Again
+                        </a>
+                    <% } %>
+                <% } %>
             </div>
         </div>
     </main>
@@ -57,9 +81,9 @@
             gtag('js', new Date());
             gtag('config', '<%= config.analytics.google.tracking_id %>');
         </script>
-        <% } %>
+    <% } %>
 
-            <script src="/js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 
 </html>

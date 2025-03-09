@@ -189,23 +189,31 @@
                                         <div class="key-section">
                                             <label>License Key:</label>
                                             <div class="key-container">
-                                                <code
-                                                    class="key-text"><%= license.key.substring(0, license.key.length / 3) %>...</code>
-                                                <button class="copy-btn" onclick="copyKey('<%= license.key %>')"
-                                                    aria-label="Copy license key">
+                                                <code class="key-text"><%= license.key %></code>
+                                                <button class="copy-btn" onclick="copyKey('<%= license.key %>')" aria-label="Copy license key">
                                                     <i class="fas fa-copy" aria-hidden="true"></i> Copy
                                                 </button>
                                             </div>
                                         </div>
                                         <div class="details">
-                                            <p>Expires: <%= license.expiresAt.toLocaleDateString() %>
-                                            </p>
-                                            <p>HWID: <%= license.hwid ? license.hwid.substring(0, license.hwid.length /
-                                                    4) + '...' : 'Not bound' %>
-                                            </p>
-                                            <p>User: <%= license.user ? license.user.username : (license.discordId ?
-                                                    license.discordUsername : 'Unassigned' ) %>
-                                            </p>
+                                            <div class="detail-item">
+                                                <span class="detail-label expires-label">Expires</span>
+                                                <span class="detail-value expires-value">
+                                                    <%= license.expiresAt.toLocaleDateString() %>
+                                                </span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label hwid-label">HWID</span>
+                                                <span class="detail-value <%= license.hwid ? 'hwid-value-bound' : 'hwid-value-unbound' %>">
+                                                    <%= license.hwid ? license.hwid.substring(0, license.hwid.length / 1.5) + '...' : 'Not bound' %>
+                                                </span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="detail-label user-label">User</span>
+                                                <span class="detail-value <%= license.user || license.discordId ? 'user-value-assigned' : 'user-value-unassigned' %>">
+                                                    <%= license.user ? license.user.username : (license.discordId ? license.discordUsername : 'Unassigned' ) %>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="user-actions">
@@ -256,14 +264,27 @@
                                     </div>
                                     <div class="user-body">
                                         <div class="user-info">
-                                            <p>Discord ID: <%= user.discordId.substring(0,
-                                                    Math.floor(user.discordId.length / 1.2)) %>...</p>
-                                            <p>Username: <%= user.username.substring(0, Math.floor(user.username.length
-                                                    / 1.3)) %>...</p>
-                                            <p>Active Licenses: <%= user.activeLicenses %>
-                                            </p>
+                                            <div class="user-detail-item">
+                                                <span class="user-detail-label discord-label">Discord ID</span>
+                                                <span class="user-detail-value discord-value">
+                                                    <%= user.discordId %>
+                                                </span>
+                                            </div>
+                                            <div class="user-detail-item">
+                                                <span class="user-detail-label username-label">Username</span>
+                                                <span class="user-detail-value username-value">
+                                                    <%= user.username %>
+                                                </span>
+                                            </div>
+                                            <div class="user-detail-item">
+                                                <span class="user-detail-label licenses-label">Active Licenses</span>
+                                                <span class="user-detail-value <%= user.activeLicenses > 0 ? 'licenses-value-active' : 'licenses-value-none' %>">
+                                                    <%= user.activeLicenses %>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="user-actions">
                                         <button onclick="toggleBan('<%= user._id %>', this)"
                                             class="action-button <%= user.isBanned ? 'success' : 'danger' %>"
@@ -324,187 +345,6 @@
         <% } %>
 
             <script src="/js/main.js"></script>
-            <script>
-                // Function to show selected section
-                function showSection(sectionId, event) {
-                    // Hide all sections
-                    document.querySelectorAll('.staff-section').forEach(section => {
-                        section.classList.remove('active');
-                    });
-
-                    // Remove active class from all nav buttons
-                    document.querySelectorAll('.staff-nav-btn').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-
-                    // Show selected section
-                    document.getElementById(sectionId + '-section').classList.add('active');
-
-                    // Add active class to clicked button
-                    if (event && event.currentTarget) {
-                        event.currentTarget.classList.add('active');
-                    }
-                }
-
-                // Functions for staff actions
-                async function deleteProduct(productId) {
-                    if (confirm('Are you sure you want to delete this product?')) {
-                        try {
-                            const response = await fetch(`/api/products/${productId}`, {
-                                method: 'DELETE'
-                            });
-
-                            if (response.ok) {
-                                createNotification('Product deleted successfully', 'success');
-                                setTimeout(() => window.location.reload(), 1000);
-                            } else {
-                                const data = await response.json();
-                                createNotification(data.message || 'Failed to delete product', 'error');
-                            }
-                        } catch (error) {
-                            createNotification('An error occurred', 'error');
-                        }
-                    }
-                }
-
-                async function toggleLicense(licenseId, button) {
-                    try {
-                        const isActive = button.classList.contains('active');
-                        const action = isActive ? 'deactivate' : 'activate';
-
-                        const response = await fetch(`/api/licenses/${licenseId}/${action}`, {
-                            method: 'POST'
-                        });
-
-                        if (response.ok) {
-                            createNotification(`License ${isActive ? 'deactivated' : 'activated'} successfully`, 'success');
-
-                            // Update button state
-                            button.classList.toggle('active');
-                            button.classList.toggle('inactive');
-                            button.innerHTML = `<i class="fas fa-power-off"></i> ${isActive ? 'Activate Key' : 'Deactivate Key'}`;
-
-                            // Update parent card and badge
-                            const card = button.closest('.license-card');
-                            const badge = card.querySelector('.status-badge');
-
-                            card.classList.toggle('active');
-                            card.classList.toggle('inactive');
-                            badge.classList.toggle('active');
-                            badge.classList.toggle('inactive');
-                            badge.textContent = isActive ? 'Inactive' : 'Active';
-                        } else {
-                            const data = await response.json();
-                            createNotification(data.message || 'Failed to update license', 'error');
-                        }
-                    } catch (error) {
-                        createNotification('An error occurred', 'error');
-                    }
-                }
-
-                async function resetHWID(licenseId) {
-                    try {
-                        const response = await fetch(`/api/licenses/${licenseId}/reset-hwid`, {
-                            method: 'POST'
-                        });
-
-                        if (response.ok) {
-                            createNotification('HWID reset successfully', 'success');
-                            setTimeout(() => window.location.reload(), 1000);
-                        } else {
-                            const data = await response.json();
-                            createNotification(data.message || 'Failed to reset HWID', 'error');
-                        }
-                    } catch (error) {
-                        createNotification('An error occurred', 'error');
-                    }
-                }
-
-                async function deleteLicense(licenseId) {
-                    if (confirm('Are you sure you want to delete this license?')) {
-                        try {
-                            const response = await fetch(`/api/licenses/${licenseId}`, {
-                                method: 'DELETE'
-                            });
-
-                            if (response.ok) {
-                                createNotification('License deleted successfully', 'success');
-                                setTimeout(() => window.location.reload(), 1000);
-                            } else {
-                                const data = await response.json();
-                                createNotification(data.message || 'Failed to delete license', 'error');
-                            }
-                        } catch (error) {
-                            createNotification('An error occurred', 'error');
-                        }
-                    }
-                }
-
-                async function toggleBan(userId, button) {
-                    try {
-                        const isBanned = button.classList.contains('success');
-                        const action = isBanned ? 'unban' : 'ban';
-
-                        const response = await fetch(`/api/users/${userId}/${action}`, {
-                            method: 'POST'
-                        });
-
-                        if (response.ok) {
-                            createNotification(`User ${isBanned ? 'unbanned' : 'banned'} successfully`, 'success');
-
-                            // Update button
-                            button.classList.toggle('success');
-                            button.classList.toggle('danger');
-                            button.innerHTML = `<i class="fas ${isBanned ? 'fa-ban' : 'fa-unlock'}"></i> ${isBanned ? 'Ban User' : 'Unban User'}`;
-
-                            // Update status badge
-                            const card = button.closest('.user-card');
-                            const badge = card.querySelector('.status-badge');
-
-                            badge.classList.toggle('active');
-                            badge.classList.toggle('inactive');
-                            badge.textContent = isBanned ? 'Active' : 'Banned';
-                        } else {
-                            const data = await response.json();
-                            createNotification(data.message || 'Failed to update user', 'error');
-                        }
-                    } catch (error) {
-                        createNotification('An error occurred', 'error');
-                    }
-                }
-
-                async function toggleStaff(userId, button) {
-                    try {
-                        const isStaff = button.classList.contains('staff-active');
-                        const action = isStaff ? 'remove-staff' : 'make-staff';
-
-                        const response = await fetch(`/api/users/${userId}/${action}`, {
-                            method: 'POST'
-                        });
-
-                        if (response.ok) {
-                            createNotification(`User ${isStaff ? 'removed from' : 'added to'} staff successfully`, 'success');
-
-                            // Update button
-                            button.classList.toggle('staff-active');
-                            button.classList.toggle('staff-inactive');
-                            button.innerHTML = `<i class="fas ${isStaff ? 'fa-user-plus' : 'fa-user-minus'}"></i> ${isStaff ? 'Make Staff' : 'Remove Staff'}`;
-
-                            // Update staff badge
-                            const card = button.closest('.user-card');
-                            const badge = card.querySelector('.user-status');
-
-                            badge.classList.toggle('staff');
-                            badge.textContent = isStaff ? 'User' : 'Staff';
-                        } else {
-                            const data = await response.json();
-                            createNotification(data.message || 'Failed to update user', 'error');
-                        }
-                    } catch (error) {
-                        createNotification('An error occurred', 'error');
-                    }
-                }
-            </script>
 </body>
 
 </html>

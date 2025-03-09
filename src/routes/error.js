@@ -161,7 +161,7 @@ router.get('/500', (req, res) => {
             {
                 text: 'Contact Support',
                 icon: 'fa-life-ring',
-                url: '/dash/support',
+                url: 'https://hexrift.net/discord',
                 primary: false
             }
         ]
@@ -231,7 +231,7 @@ router.get('/403', (req, res) => {
             {
                 text: 'Contact Support',
                 icon: 'fa-life-ring',
-                url: '/dash/support',
+                url: 'https://hexrift.net/discord',
                 primary: false
             }
         ]
@@ -260,13 +260,13 @@ router.get('/maintenance', (req, res) => {
             {
                 text: 'Check Status',
                 icon: 'fa-info-circle',
-                url: config.support.status || 'https://status.yourdomain.com',
+                url: config.support.status || 'https://status.hexrift.net',
                 primary: true
             },
             {
                 text: 'Discord Server',
                 icon: 'fa-discord',
-                url: config.support.discord || 'https://discord.gg/yourserver',
+                url: config.support.discord || 'https://hexrift.net/discord',
                 primary: false
             }
         ]
@@ -298,7 +298,7 @@ router.get('/expired', (req, res) => {
             {
                 text: 'Contact Support',
                 icon: 'fa-life-ring',
-                url: '/dash/support',
+                url: 'https://hexrift.net/discord',
                 primary: false
             }
         ]
@@ -319,7 +319,7 @@ router.get('/expired', (req, res) => {
 router.get('/ratelimited', (req, res) => {
     const errorData = {
         errorType: 'ratelimited',
-        errorIcon: 'fa-hourglass-half',
+        errorIcon: 'fa-stopwatch',
         errorTitle: 'Rate Limit Exceeded',
         errorMessage: 'You\'ve made too many requests in a short period of time.',
         errorDetails: 'Please wait a few minutes before trying again.',
@@ -390,7 +390,7 @@ router.get('/error', (req, res) => {
             {
                 text: 'Contact Support',
                 icon: 'fa-life-ring',
-                url: '/dash/support',
+                url: 'https://hexrift.net/discord',
                 primary: false
             }
         ]
