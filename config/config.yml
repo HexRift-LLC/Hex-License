@@ -4,6 +4,8 @@ auth:
 server:
   port: 3000
   session_secret: "Your secret here"
+  rate_limit:
+    whitelist: ["127.0.0.1", "192.168.1.1"]  # Add your whitelisted IPs here
 
 mongodb:
   uri: "mongodb://localhost:27017/Hex-License"

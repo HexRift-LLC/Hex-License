@@ -63,7 +63,7 @@ async function main() {
     // Display welcome banner first
     displayWelcome();
     // NOW it's safe to load all the other modules and start the application
-    const app =  initializeFullApplication();
+    const app = initializeFullApplication();
 
     return app;
   } catch (error) {
@@ -248,6 +248,11 @@ async function initializeFullApplication() {
       standardHeaders: true,
       legacyHeaders: false,
       message: "Too many requests, please try again later",
+      skip: (req, res) => {
+        // Skip rate limiting for whitelisted IPs
+        const whitelistedIPs = config.server?.rate_limit?.whitelist || [];
+        return whitelistedIPs.includes(req.ip);
+      },
     });
 
     // Rate limiting - API specific (stricter)
@@ -257,6 +262,11 @@ async function initializeFullApplication() {
       standardHeaders: true,
       legacyHeaders: false,
       message: { error: "Too many requests, please try again later" },
+      skip: (req, res) => {
+        // Skip rate limiting for whitelisted IPs
+        const whitelistedIPs = config.server?.rate_limit?.whitelist || [];
+        return whitelistedIPs.includes(req.ip);
+      },
     });
 
     // Apply rate limiting
