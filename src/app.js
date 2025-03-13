@@ -544,7 +544,7 @@ async function initializeFullApplication() {
       logger.info("Checking for updates...");
 
       const response = await axios.get(
-        `https://hexarion.net/api/version/${PRODUCT_ID}?current=${version}`,
+        `https://hexrift.net/api/version/${PRODUCT_ID}?current=${version}`,
         {
           headers: {
             "x-api-key": "8IOLaAYzGJNwcYb@bm1&WOcr%aK5!O",
